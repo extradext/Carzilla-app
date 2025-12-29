@@ -108,7 +108,7 @@ export const CLARIFIERS: Clarifier[] = [
   {
     id: "wont-start-fuel-pump-sound",
     question: "When you turn the key to ON (before cranking), do you hear a brief humming sound from the rear/under the vehicle?",
-    familyIds: [HYPOTHESIS_FAMILIES.FUEL, HYPOTHESIS_FAMILIES.ELECTRICAL, HYPOTHESIS_FAMILIES.IGNITION],
+    familyIds: [HYPOTHESIS_FAMILIES.FUEL, HYPOTHESIS_FAMILIES.GROUNDS, HYPOTHESIS_FAMILIES.IGNITION],
     observationId: OBSERVATION_IDS.FUEL_PUMP_SOUND_NOT_HEARD,
     notes: [
       "Hard-to-hear sound; users may answer UNSURE.",
