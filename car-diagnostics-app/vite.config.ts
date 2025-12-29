@@ -1,7 +1,10 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-// Minimal Vite + React + TS config.
 export default defineConfig({
   plugins: [react()],
+  server: {
+    // Required for Emergent preview domains.
+    allowedHosts: ["contract-builder-9.preview.emergentagent.com"],
+  },
 });
