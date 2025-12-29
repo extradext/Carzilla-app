@@ -47,9 +47,7 @@ export function Results({ result }: ResultsProps) {
         </ul>
       </div>
 
-      <p style={{ opacity: 0.85 }} data-testid="results-todo">
-        TODO: Replace this mock with <code>runDiagnosticEngine()</code> output once core/diagnostics are implemented.
-      </p>
+      
     </section>
   );
 }
