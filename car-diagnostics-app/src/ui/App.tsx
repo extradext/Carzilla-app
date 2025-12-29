@@ -17,7 +17,7 @@ type Tab = "diagnose" | "results" | "vehicles" | "maintenance" | "settings";
 export function App() {
   const [tab, setTab] = useState<Tab>("diagnose");
 
-  import type { DiagnosticResult } from "../models/diagnosticResult";
+  
 
 const [result, setResult] = useState<DiagnosticResult | null>(null);
 
