@@ -187,17 +187,17 @@ export function scoreHypotheses(
       continue;
     }
 
-    const baseWeight = resolveStrength(o);
+    const { baseStrength, bucket } = resolveStrength(o);
     const sign: 1 | -1 = v === OBSERVATION_VALUE.YES ? 1 : -1;
 
     // Primary family: full weight.
-    addContribution(accByFamily[families.primary], sign, baseWeight);
+    addContribution(accByFamily[families.primary], sign, bucket, baseStrength);
 
     // Secondary families: cross-family spillover only to explicit secondaries.
     if (families.secondary && families.secondary.length > 0) {
-      const spill = baseWeight * CROSS_FAMILY_MULTIPLIER;
+      const spill = baseStrength * CROSS_FAMILY_MULTIPLIER;
       for (const secondaryFamily of families.secondary) {
-        addContribution(accByFamily[secondaryFamily], sign, spill);
+        addContribution(accByFamily[secondaryFamily], sign, bucket, spill);
       }
     }
   }
