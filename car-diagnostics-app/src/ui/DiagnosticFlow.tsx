@@ -48,18 +48,18 @@ export function DiagnosticFlow({ onResult }: DiagnosticFlowProps) {
   className="button"
   data-testid="run-diagnosis-button"
   onClick={() => {
-    const result = runDiagnosticEngine({
-      vehicleId: "test-vehicle",
-      entryAnchor,
-      observations: [
-        {
-          id: "battery_weak",
-          value: OBSERVATION_VALUE.YES,
-        },
-      ],
-    });
+    const output = runDiagnosticEngine({
+  vehicleId: "test-vehicle",
+  entryAnchor,
+  observations: [
+    {
+      id: "battery_weak",
+      value: OBSERVATION_VALUE.YES,
+    },
+  ],
+});
 
-    console.log("Diagnostic result:", result);
+onResult(output.result);
   }}
 >
   Run diagnosis
