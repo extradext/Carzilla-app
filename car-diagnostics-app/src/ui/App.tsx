@@ -41,12 +41,18 @@ export function App() {
       </header>
 
       <main style={{ marginTop: 18 }} data-testid="app-main">
-        {tab === "diagnose" && <DiagnosticFlow />}
-        {tab === "results" && (
-          <Results
-            // UI-only mock until engine is implemented.
-            result={mockResult}
+        {tab === "diagnose" && (
+          <DiagnosticFlow
+            onResult={(result) => {
+              setLastResult(result);
+            }}
           />
+        )}
+        {tab === "results" && lastResult && <Results result={lastResult} />}
+        {tab === "results" && !lastResult && (
+          <div className="card" data-testid="results-empty">
+            No results yet.
+          </div>
         )}
         {tab === "vehicles" && <VehicleProfiles />}
         {tab === "maintenance" && <Maintenance />}
