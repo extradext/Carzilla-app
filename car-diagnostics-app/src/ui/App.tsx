@@ -17,16 +17,9 @@ type Tab = "diagnose" | "results" | "vehicles" | "maintenance" | "settings";
 export function App() {
   const [tab, setTab] = useState<Tab>("diagnose");
 
-  // Placeholder state: UI can render mock data until engine/core is implemented.
-  const mockResult = useMemo(
-    () => ({
-      topHypothesis: "TODO",
-      confidence: 0,
-      band: "UNSURE",
-      safetyNotes: ["TODO: Safety evaluation will be injected from /src/core/safety"],
-    }),
-    []
-  );
+  import type { DiagnosticResult } from "../models/diagnosticResult";
+
+const [result, setResult] = useState<DiagnosticResult | null>(null);
 
   return (
     <div className="container" data-testid="app-shell">
@@ -50,11 +43,13 @@ export function App() {
       </header>
 
       <main style={{ marginTop: 18 }} data-testid="app-main">
-        {tab === "diagnose" && <DiagnosticFlow />}
+        {tab === "diagnose" && (
+  <DiagnosticFlow onResult={setResult} />
+)}
         {tab === "results" && (
           <Results
             // UI-only mock until engine is implemented.
-            result={mockResult}
+            result={result}
           />
         )}
         {tab === "vehicles" && <VehicleProfiles />}
