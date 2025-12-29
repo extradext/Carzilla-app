@@ -5,7 +5,8 @@
  * Consumes engine outputs. Must not contain scoring/safety logic.
  */
 
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
+import type { DiagnosticResult } from "../models/diagnosticResult";
 import { DiagnosticFlow } from "./DiagnosticFlow";
 import { Results } from "./Results";
 import { VehicleProfiles } from "./VehicleProfiles";
@@ -16,17 +17,7 @@ type Tab = "diagnose" | "results" | "vehicles" | "maintenance" | "settings";
 
 export function App() {
   const [tab, setTab] = useState<Tab>("diagnose");
-
-  // Placeholder state: UI can render mock data until engine/core is implemented.
-  const mockResult = useMemo(
-    () => ({
-      topHypothesis: "TODO",
-      confidence: 0,
-      band: "UNSURE",
-      safetyNotes: ["TODO: Safety evaluation will be injected from /src/core/safety"],
-    }),
-    []
-  );
+  const [lastResult, setLastResult] = useState<DiagnosticResult | null>(null);
 
   return (
     <div className="container" data-testid="app-shell">
