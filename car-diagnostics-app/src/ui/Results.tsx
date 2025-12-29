@@ -19,7 +19,7 @@ export function Results({ result }: ResultsProps) {
   return (
     <section className="card" data-testid="results-panel">
       <h2 style={{ marginTop: 0 }} data-testid="results-title">
-        Results (Mock)
+        Results
       </h2>
 
       <div className="row" data-testid="results-summary-row">
