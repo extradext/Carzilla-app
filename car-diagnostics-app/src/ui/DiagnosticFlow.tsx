@@ -43,10 +43,12 @@ export function DiagnosticFlow({ onResult }: DiagnosticFlowProps) {
           className="button"
           data-testid="run-diagnosis-button"
           onClick={() => {
-            // UI-only placeholder.
-            // TODO: Call runDiagnosticEngine() when /engine is wired and core logic is implemented.
-            // eslint-disable-next-line no-console
-            console.log("TODO: run diagnosis", { entryAnchor });
+            const output = runDiagnosticEngine({
+              vehicleId: "TODO",
+              entryAnchor: entryAnchor as any,
+              observations: [],
+            });
+            onResult(output.result);
           }}
         >
           Run diagnosis (TODO)
