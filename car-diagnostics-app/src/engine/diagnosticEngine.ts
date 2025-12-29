@@ -63,14 +63,18 @@ function extractSupportingObservationIds(observations: ObservationResponse[]): s
 
 export function runDiagnosticEngine(input: DiagnosticEngineInput): DiagnosticEngineOutput {
   const timestamp = input.timestamp ?? new Date().toISOString();
-  const observations = normalizeObservations(input.observations);
 
   // 1) Safety
-  const safety = evaluateSafety(observations);
+  // NOTE: We pass observations as-is; safety.ts performs its own value normalization.
+  const safety = evaluateSafety(input.observations);
+
+  // 2) Observations normalization
+  const observations = normalizeObservations(input.observations);
 
   // If safety override, bypass scoring and return safety result.
   if ((safety as any)?.safetyOverride === true) {
     const result: DiagnosticResult = {
+      // TODO: Provide a deterministic UUID from upstream; engine should not invent IDs.
       id: input.resultId ?? "TODO",
       vehicleId: input.vehicleId,
       timestamp,
@@ -84,7 +88,6 @@ export function runDiagnosticEngine(input: DiagnosticEngineInput): DiagnosticEng
     return { result };
   }
 
-  // 2) Observations normalization already done above.
   // 3) Clarifiers resolution happens upstream (already expressed as observations).
 
   // 4) Scoring
@@ -98,6 +101,7 @@ export function runDiagnosticEngine(input: DiagnosticEngineInput): DiagnosticEng
   const topHypothesis = "TODO";
 
   const result: DiagnosticResult = {
+    // TODO: Provide a deterministic UUID from upstream; engine should not invent IDs.
     id: input.resultId ?? "TODO",
     vehicleId: input.vehicleId,
     timestamp,
