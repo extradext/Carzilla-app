@@ -5,6 +5,11 @@
   "description": "Scaffolded per locked repository structure and file contracts. Logic intentionally unimplemented.",
   "license": "UNLICENSED",
   "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
+  },
   "dependencies": {
     "react": "^19.2.3",
     "react-dom": "^19.2.3"
