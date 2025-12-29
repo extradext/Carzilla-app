@@ -92,8 +92,8 @@ export function runDiagnosticEngine(input: DiagnosticEngineInput): DiagnosticEng
   // If safety override, bypass scoring and return safety result.
   if ((safety as any)?.safetyOverride === true) {
     const result: DiagnosticResult = {
-      // TODO: Provide a deterministic UUID from upstream; engine should not invent IDs.
-      id: input.resultId ?? "TODO",
+      // Engine must not generate UUIDs.
+      id: input.resultId ?? null,
       vehicleId: input.vehicleId,
       timestamp,
       entryAnchor: input.entryAnchor,
