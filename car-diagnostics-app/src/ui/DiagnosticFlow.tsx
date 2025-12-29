@@ -17,7 +17,7 @@ export function DiagnosticFlow({ onResult }: DiagnosticFlowProps) {
   return (
     <section className="card" data-testid="diagnostic-flow">
       <h2 style={{ marginTop: 0 }} data-testid="diagnostic-flow-title">
-        Diagnostic Flow (Placeholder)
+        Diagnostic Flow
       </h2>
       <p data-testid="diagnostic-flow-note">
         TODO: This UI will collect observations/clarifiers and then call the orchestration layer in <code>/src/engine</code>.
