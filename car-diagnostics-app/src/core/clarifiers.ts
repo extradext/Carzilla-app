@@ -151,7 +151,22 @@ export const CLARIFIERS: Clarifier[] = [
     // Note: Exhaust smell in cabin is a safety-critical OBSERVATION, not a clarifier.
     notes: [
       "Helps differentiate HVAC-related smells from other smell sources.",
-      "If the smell is explicitly exhaust in the cabin, that should be recorded as the safety-critical observation.",
+      "If the smell is explicitly exhaust in the cabin, record it as the safety-critical observation and apply safety override.",
     ],
   },
 ];
+
+/**
+ * Engine-only contract helpers (no selection/scoring logic here).
+ */
+export function isValidClarifierValue(value: unknown): value is ClarifierValue {
+  return (
+    value === CLARIFIER_VALUE.YES ||
+    value === CLARIFIER_VALUE.NO ||
+    value === CLARIFIER_VALUE.UNSURE
+  );
+}
+
+export function getClarifierById(id: string): Clarifier | undefined {
+  return CLARIFIERS.find((c) => c.id === id);
+}
