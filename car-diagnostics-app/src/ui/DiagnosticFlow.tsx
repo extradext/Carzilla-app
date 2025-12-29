@@ -7,7 +7,11 @@ import React, { useState } from "react";
 
 // TODO: Replace with types from /diagnostics/entryAnchors when engine wiring is added.
 
-export function DiagnosticFlow() {
+type DiagnosticFlowProps = {
+  onResult: (result: DiagnosticResult) => void;
+};
+
+export function DiagnosticFlow({ onResult }: DiagnosticFlowProps) {
   const [entryAnchor, setEntryAnchor] = useState<string>("wont_start");
 
   return (
