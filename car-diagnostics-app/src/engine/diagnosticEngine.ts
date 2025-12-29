@@ -42,6 +42,24 @@ export type DiagnosticEngineOutput = {
   scores?: Record<string, number>;
 };
 
+function selectTopHypothesis(scores: Record<string, number>): string | null {
+  // Choose the family with the highest absolute score.
+  // Deterministic tie-break: iteration order (Object.entries order).
+  let bestFamily: string | null = null;
+  let bestAbs = 0;
+
+  for (const [family, score] of Object.entries(scores)) {
+    const abs = Math.abs(typeof score === "number" ? score : 0);
+    if (abs > bestAbs) {
+      bestAbs = abs;
+      bestFamily = family;
+    }
+  }
+
+  if (bestAbs === 0) return null;
+  return bestFamily;
+}
+
 function normalizeObservations(observations: ObservationResponse[]): ObservationResponse[] {
   // Normalization is limited to allowed values; no scoring/diagnosis here.
   return observations.map((o) => ({
