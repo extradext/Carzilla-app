@@ -84,8 +84,8 @@ export const observationFamilies: Partial<Record<ObservationId, ObservationFamil
   // ELECTRICAL
   // ---------------------------------------------------------------------------
   [OBSERVATION_IDS.HEADLIGHTS_DIM]: {
-    primary: HYPOTHESIS_FAMILIES.ALTERNATOR,
-    secondary: [HYPOTHESIS_FAMILIES.BATTERY, HYPOTHESIS_FAMILIES.GROUNDS],
+    primary: HYPOTHESIS_FAMILIES.BATTERY,
+    secondary: [HYPOTHESIS_FAMILIES.ALTERNATOR],
   },
   [OBSERVATION_IDS.LIGHTS_FLICKER]: {
     primary: HYPOTHESIS_FAMILIES.GROUNDS,
