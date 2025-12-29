@@ -114,13 +114,14 @@ export function runDiagnosticEngine(input: DiagnosticEngineInput): DiagnosticEng
   // 5) Confidence
   const conf = calculateConfidence(scores);
 
-  // Engine does not implement ranking rules; however, DiagnosticResult requires a topHypothesis.
-  // TODO: Define authoritative ranking rule for selecting the top family from score map.
-  const topHypothesis = "TODO";
+  // 1) Top hypothesis selection (engine-level orchestration rule)
+  // Choose the family with the highest absolute score.
+  // Deterministic tie-break: iteration order.
+  const topHypothesis = selectTopHypothesis(scores);
 
   const result: DiagnosticResult = {
-    // TODO: Provide a deterministic UUID from upstream; engine should not invent IDs.
-    id: input.resultId ?? "TODO",
+    // Engine must not generate UUIDs.
+    id: input.resultId ?? null,
     vehicleId: input.vehicleId,
     timestamp,
     entryAnchor: input.entryAnchor,
