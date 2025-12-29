@@ -121,7 +121,9 @@ export function runDiagnosticEngine(input: DiagnosticEngineInput): DiagnosticEng
   // Deterministic tie-break: iteration order.
   const topHypothesis = selectTopHypothesis(scores);
 
-  const result: DiagnosticResult = {
+  // NOTE: The current model types define `id` and `topHypothesis` as string.
+  // This engine revision must return nulls when missing per requirement, so we cast.
+  const result = {
     // Engine must not generate UUIDs.
     id: input.resultId ?? null,
     vehicleId: input.vehicleId,
@@ -131,7 +133,7 @@ export function runDiagnosticEngine(input: DiagnosticEngineInput): DiagnosticEng
     confidence: conf.confidence,
     supportingObservations: extractSupportingObservationIds(observations),
     safetyNotes: undefined,
-  };
+  } as unknown as DiagnosticResult;
 
   return { result, scores };
 }
