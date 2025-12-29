@@ -7,8 +7,6 @@ import React, { useState } from "react";
 import { runDiagnosticEngine } from "../engine/diagnosticEngine";
 import type { DiagnosticResult } from "../models/diagnosticResult";
 
-// TODO: Replace with types from /diagnostics/entryAnchors when engine wiring is added.
-
 type DiagnosticFlowProps = {
   onResult: (result: DiagnosticResult) => void;
 };
