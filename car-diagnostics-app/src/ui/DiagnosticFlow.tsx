@@ -51,7 +51,7 @@ export function DiagnosticFlow({ onResult }: DiagnosticFlowProps) {
             onResult(output.result);
           }}
         >
-          Run diagnosis (TODO)
+          Run diagnosis
         </button>
       </div>
 
