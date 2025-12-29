@@ -48,7 +48,7 @@ const [result, setResult] = useState<DiagnosticResult | null>(null);
 )}
         {tab === "results" && (
           <Results
-            // UI-only mock until engine is implemented.
+            
             result={result}
           />
         )}
