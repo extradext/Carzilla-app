@@ -8,9 +8,11 @@ import React, { useState } from "react";
 import { runDiagnosticEngine } from "../engine/diagnosticEngine";
 import { OBSERVATION_VALUE } from "../core/observations";
 
-// TODO: Replace with types from /diagnostics/entryAnchors when engine wiring is added.
+type DiagnosticFlowProps = {
+  onResult: (result: any) => void;
+};
 
-export function DiagnosticFlow() {
+export function DiagnosticFlow({ onResult }: DiagnosticFlowProps) {
   const [entryAnchor, setEntryAnchor] = useState<string>("wont_start");
 
   return (
@@ -60,7 +62,7 @@ export function DiagnosticFlow() {
     console.log("Diagnostic result:", result);
   }}
 >
-  Run diagnosis (mock)
+  Run diagnosis
 </button>
       </div>
 
