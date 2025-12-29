@@ -19,10 +19,6 @@ export function DiagnosticFlow({ onResult }: DiagnosticFlowProps) {
       <h2 style={{ marginTop: 0 }} data-testid="diagnostic-flow-title">
         Diagnostic Flow
       </h2>
-      <p data-testid="diagnostic-flow-note">
-        TODO: This UI will collect observations/clarifiers and then call the orchestration layer in <code>/src/engine</code>.
-        No scoring/safety logic exists in the UI.
-      </p>
 
       <div className="row" style={{ alignItems: "center" }}>
         <label htmlFor="entryAnchor" data-testid="entry-anchor-label">
