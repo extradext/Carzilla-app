@@ -73,19 +73,18 @@ function getFamiliesForObservation(id: ObservationId): FamilyRule | undefined {
 
 type StrengthBucket = "WEAK" | "MEDIUM" | "STRONG";
 
-function bucketStrength(strength: number): StrengthBucket | undefined {
-  if (strength === OBSERVATION_STRENGTH.WEAK) return "WEAK";
-  if (strength === OBSERVATION_STRENGTH.MEDIUM) return "MEDIUM";
+function bucketStrength(strength: number): StrengthBucket {
   if (strength === OBSERVATION_STRENGTH.STRONG) return "STRONG";
-  return undefined;
+  if (strength === OBSERVATION_STRENGTH.MEDIUM) return "MEDIUM";
+  return "WEAK";
 }
 
-function resolveStrength(o: ObservationResponse): number {
+function resolveStrength(o: ObservationResponse): { baseStrength: number; bucket: StrengthBucket } {
   // Prefer explicit strength if provided; else fall back to definition default.
-  if (typeof o.strength === "number") return o.strength;
+  const explicit = typeof o.strength === "number" ? o.strength : undefined;
   const def = (OBSERVATION_DEFINITIONS as any)[o.id] as { defaultStrength?: number } | undefined;
-  if (def?.defaultStrength) return def.defaultStrength;
-  return OBSERVATION_STRENGTH.WEAK;
+  const baseStrength = explicit ?? def?.defaultStrength ?? OBSERVATION_STRENGTH.WEAK;
+  return { baseStrength, bucket: bucketStrength(baseStrength) };
 }
 
 type FamilyAccumulator = {
@@ -95,7 +94,8 @@ type FamilyAccumulator = {
   negWeak: number;
   negMedium: number;
   negStrong: number;
-  hasStrongPositive: boolean;
+  /** True once any strong observation exists for this family (positive or negative). */
+  hasAnyStrong: boolean;
 };
 
 function createEmptyAcc(): FamilyAccumulator {
@@ -106,34 +106,33 @@ function createEmptyAcc(): FamilyAccumulator {
     negWeak: 0,
     negMedium: 0,
     negStrong: 0,
-    hasStrongPositive: false,
+    hasAnyStrong: false,
   };
 }
 
-function addContribution(acc: FamilyAccumulator, sign: 1 | -1, weight: number): void {
-  const bucket = bucketStrength(weight);
-  if (!bucket) return;
-
+function addContribution(acc: FamilyAccumulator, sign: 1 | -1, bucket: StrengthBucket, amount: number): void {
+  // NOTE: amount may be fractional (e.g., cross-family multiplier). Bucket is derived from the base strength.
   if (sign === 1) {
-    if (bucket === "WEAK") acc.posWeak += weight;
-    if (bucket === "MEDIUM") acc.posMedium += weight;
+    if (bucket === "WEAK") acc.posWeak += amount;
+    if (bucket === "MEDIUM") acc.posMedium += amount;
     if (bucket === "STRONG") {
-      acc.posStrong += weight;
-      acc.hasStrongPositive = true;
+      acc.posStrong += amount;
+      acc.hasAnyStrong = true;
     }
   } else {
-    if (bucket === "WEAK") acc.negWeak += weight;
-    if (bucket === "MEDIUM") acc.negMedium += weight;
-    if (bucket === "STRONG") acc.negStrong += weight;
+    if (bucket === "WEAK") acc.negWeak += amount;
+    if (bucket === "MEDIUM") acc.negMedium += amount;
+    if (bucket === "STRONG") {
+      acc.negStrong += amount;
+      acc.hasAnyStrong = true;
+    }
   }
 }
 
 function applyMediumCap(acc: FamilyAccumulator): void {
-  // Medium-only cap applies only to positive medium contributions and only if no strong positive exists.
-  if (acc.hasStrongPositive) return;
-  if (acc.posMedium > OBSERVATION_STRENGTH.MEDIUM) {
-    acc.posMedium = OBSERVATION_STRENGTH.MEDIUM;
-  }
+  // Medium-only cap applies only to positive medium contributions and only if the family has zero strong observations.
+  if (acc.hasAnyStrong) return;
+  if (acc.posMedium > OBSERVATION_STRENGTH.MEDIUM) acc.posMedium = OBSERVATION_STRENGTH.MEDIUM;
 }
 
 function finalizeScore(acc: FamilyAccumulator): number {
