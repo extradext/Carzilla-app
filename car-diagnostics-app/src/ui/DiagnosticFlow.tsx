@@ -5,6 +5,9 @@
 
 import React, { useState } from "react";
 
+import { runDiagnosticEngine } from "../engine/diagnosticEngine";
+import { OBSERVATION_VALUE } from "../core/observations";
+
 // TODO: Replace with types from /diagnostics/entryAnchors when engine wiring is added.
 
 export function DiagnosticFlow() {
@@ -40,17 +43,25 @@ export function DiagnosticFlow() {
         </select>
 
         <button
-          className="button"
-          data-testid="run-diagnosis-button"
-          onClick={() => {
-            // UI-only placeholder.
-            // TODO: Call runDiagnosticEngine() when /engine is wired and core logic is implemented.
-            // eslint-disable-next-line no-console
-            console.log("TODO: run diagnosis", { entryAnchor });
-          }}
-        >
-          Run diagnosis (TODO)
-        </button>
+  className="button"
+  data-testid="run-diagnosis-button"
+  onClick={() => {
+    const result = runDiagnosticEngine({
+      vehicleId: "test-vehicle",
+      entryAnchor,
+      observations: [
+        {
+          id: "battery_weak",
+          value: OBSERVATION_VALUE.YES,
+        },
+      ],
+    });
+
+    console.log("Diagnostic result:", result);
+  }}
+>
+  Run diagnosis (mock)
+</button>
       </div>
 
       <div style={{ marginTop: 12 }} data-testid="diagnostic-flow-debug">
