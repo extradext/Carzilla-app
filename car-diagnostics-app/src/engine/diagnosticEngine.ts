@@ -91,7 +91,9 @@ export function runDiagnosticEngine(input: DiagnosticEngineInput): DiagnosticEng
 
   // If safety override, bypass scoring and return safety result.
   if ((safety as any)?.safetyOverride === true) {
-    const result: DiagnosticResult = {
+    // NOTE: The current model types define `id` and `topHypothesis` as string.
+    // This engine revision must return nulls when missing per requirement, so we cast.
+    const result = {
       // Engine must not generate UUIDs.
       id: input.resultId ?? null,
       vehicleId: input.vehicleId,
@@ -101,7 +103,7 @@ export function runDiagnosticEngine(input: DiagnosticEngineInput): DiagnosticEng
       confidence: 0,
       supportingObservations: extractSupportingObservationIds(observations),
       safetyNotes: (safety as any)?.notes ?? ["Safety override triggered."],
-    };
+    } as unknown as DiagnosticResult;
 
     return { result };
   }
