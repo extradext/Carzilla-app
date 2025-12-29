@@ -4,5 +4,9 @@
   "version": "0.0.0",
   "description": "Scaffolded per locked repository structure and file contracts. Logic intentionally unimplemented.",
   "license": "UNLICENSED",
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
+  }
 }
