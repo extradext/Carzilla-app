@@ -111,13 +111,13 @@ export function VehicleProfiles({ onVehicleChange }: VehicleProfilesProps) {
     if (!validateForm()) return;
     const newVehicle = createVehicle(formData);
     addVehicle(newVehicle);
+    
+    // Auto-select the new vehicle (always for first vehicle, or just select it)
+    setActiveVehicleId(newVehicle.id);
+    setActiveId(newVehicle.id);
+    onVehicleChange?.(newVehicle);
+    
     refreshVehicles();
-    
-    // Auto-select if first vehicle
-    if (vehicles.length === 0) {
-      handleSelectVehicle(newVehicle.id);
-    }
-    
     setMode("list");
   };
 
