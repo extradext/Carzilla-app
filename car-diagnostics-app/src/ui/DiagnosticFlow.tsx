@@ -16,7 +16,6 @@ import type { DiagnosticResult } from "../models/diagnosticResult";
 import type { ObservationResponse } from "../core/observations";
 import type { Vehicle } from "../models/vehicle";
 import type { SafetyEvaluation } from "../core/safety";
-import type { HypothesisFamilyId } from "../diagnostics/hypothesisFamilies";
 import { SafetyPanel } from "./SafetyPanel";
 import { ProControls } from "./ProControls";
 import { addDiagnosticResult } from "../storage/localStore";
@@ -31,7 +30,7 @@ type DiagnosticFlowProps = {
 export function DiagnosticFlow({ vehicle, observations, isPro, onResult }: DiagnosticFlowProps) {
   const [entryAnchor, setEntryAnchor] = useState<string>("wont_start");
   const [safety, setSafety] = useState<SafetyEvaluation | null>(null);
-  const [excludedFamilies, setExcludedFamilies] = useState<Set<HypothesisFamilyId>>(new Set());
+  const [excludedComponents, setExcludedComponents] = useState<Set<string>>(new Set());
   const [isRunning, setIsRunning] = useState(false);
 
   // Check if we can run diagnosis
@@ -71,8 +70,8 @@ export function DiagnosticFlow({ vehicle, observations, isPro, onResult }: Diagn
     }, 300);
   };
 
-  const handleExcludedChange = (excluded: Set<HypothesisFamilyId>) => {
-    setExcludedFamilies(excluded);
+  const handleExcludedChange = (excluded: Set<string>) => {
+    setExcludedComponents(excluded);
   };
 
   // No vehicle gate
