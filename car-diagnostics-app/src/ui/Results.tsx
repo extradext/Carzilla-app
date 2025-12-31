@@ -7,19 +7,31 @@
  * - Confidence band
  * - Supporting observations
  * - Context Panel (uses contextEvaluator)
+ * - Post-Result Actions
  */
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import type { DiagnosticResult } from "../models/diagnosticResult";
+import type { ObservationResponse } from "../core/observations";
+import type { Vehicle } from "../models/vehicle";
 import { HYPOTHESIS_FAMILY_LABELS, type HypothesisFamilyId } from "../diagnostics/hypothesisFamilies";
 import { OBSERVATION_DEFINITIONS, type ObservationId } from "../core/observations";
 import { evaluateContext, type KnownIssue } from "../engine/contextEvaluator";
 import { ContextPanel } from "./ContextPanel";
+import {
+  exportDiagnosticResult,
+  exportDiagnosticResultJSON,
+  downloadAsFile,
+  copyToClipboard,
+} from "../utils/export";
 
 type ResultsProps = {
   result: DiagnosticResult;
   scores?: Record<string, number>;
   knownIssues?: KnownIssue[];
+  vehicle?: Vehicle | null;
+  observations?: ObservationResponse[];
+  onRerunExcluding?: (excludeHypothesis: string) => void;
 };
 
 function getConfidenceBand(confidence: number): { label: string; color: string; bg: string } {
