@@ -27,16 +27,87 @@ import {
 
 type Tab = "diagnose" | "results" | "vehicles" | "maintenance" | "settings";
 
+// App-level safety disclaimer (shown once per session)
+const DISCLAIMER_KEY = "car_diag_disclaimer_shown";
+
+function SafetyDisclaimer({ onDismiss }: { onDismiss: () => void }) {
+  return (
+    <div
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: "rgba(0,0,0,0.8)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 1000,
+        padding: 20,
+      }}
+      data-testid="safety-disclaimer-overlay"
+    >
+      <div
+        style={{
+          background: "#1e1e1e",
+          borderRadius: 12,
+          padding: 24,
+          maxWidth: 480,
+          border: "1px solid rgba(255,255,255,0.1)",
+        }}
+        data-testid="safety-disclaimer"
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+          <span style={{ fontSize: 28 }}>⚠️</span>
+          <h2 style={{ margin: 0, fontSize: 18 }}>Safety Notice</h2>
+        </div>
+        <p style={{ fontSize: 14, lineHeight: 1.6, marginBottom: 16, opacity: 0.9 }}>
+          <strong>Use diagnostics only while stationary.</strong>
+        </p>
+        <p style={{ fontSize: 13, lineHeight: 1.5, marginBottom: 20, opacity: 0.7 }}>
+          This app provides informational guidance only. Always consult a qualified mechanic for vehicle repairs. 
+          Never operate this application while driving.
+        </p>
+        <button
+          className="button"
+          onClick={onDismiss}
+          style={{
+            width: "100%",
+            padding: "12px 20px",
+            background: "rgba(59,130,246,0.3)",
+            borderColor: "rgba(59,130,246,0.5)",
+          }}
+          data-testid="btn-dismiss-disclaimer"
+        >
+          I Understand
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export function App() {
-  // Core state
+  // Disclaimer state (shown once per session)
+  const [showDisclaimer, setShowDisclaimer] = useState(() => {
+    return !sessionStorage.getItem(DISCLAIMER_KEY);
+  });
+
+  // Core state - use lazy initializers to ensure localStorage is read on mount
   const [tab, setTab] = useState<Tab>("diagnose");
-  const [activeVehicle, setActiveVehicle] = useState<Vehicle | null>(getActiveVehicle);
+  const [activeVehicle, setActiveVehicle] = useState<Vehicle | null>(() => getActiveVehicle());
   const [observations, setObservations] = useState<ObservationResponse[]>([]);
-  const [preferences, setPreferences] = useState<UserPreferences>(getUserPreferences);
+  const [preferences, setPreferences] = useState<UserPreferences>(() => getUserPreferences());
   
   // Diagnostic results
   const [lastResult, setLastResult] = useState<DiagnosticResult | null>(null);
   const [lastScores, setLastScores] = useState<Record<string, number> | undefined>(undefined);
+
+  // Handle disclaimer dismissal
+  const handleDismissDisclaimer = useCallback(() => {
+    sessionStorage.setItem(DISCLAIMER_KEY, "true");
+    setShowDisclaimer(false);
+  }, []);
 
   // Load observations when vehicle changes
   useEffect(() => {
