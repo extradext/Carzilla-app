@@ -2,45 +2,71 @@
  * /src/ui/ProControls.tsx
  * PRESENTATION ONLY
  *
- * PRO FEATURE (EXPLICIT + WARNED)
- * - Reduced-Weight / Exclusion Tool
+ * PRO FEATURE — REDUCED WEIGHT / EXCLUSION
  * - Pro-only
+ * - COMPONENT-LEVEL, not system-level
+ *   (e.g., alternator, battery, caliper, fuel pump)
  * - Per-run only (never permanent)
- * - User can mark hypothesis or component as "known good"
- * - Cannot affect safety families
- * - Must show warning
+ * - Cannot affect safety-critical items
+ * - Warning required: "May reduce accuracy or cause misdiagnosis"
  */
 
 import React, { useState } from "react";
-import { HYPOTHESIS_FAMILIES, HYPOTHESIS_FAMILY_LABELS, type HypothesisFamilyId } from "../diagnostics/hypothesisFamilies";
 
 type ProControlsProps = {
   isPro: boolean;
-  excludedFamilies: Set<HypothesisFamilyId>;
-  onExcludedChange: (excluded: Set<HypothesisFamilyId>) => void;
+  excludedComponents: Set<string>;
+  onExcludedChange: (excluded: Set<string>) => void;
 };
 
-// Families that cannot be excluded (safety-related)
-const PROTECTED_FAMILIES: HypothesisFamilyId[] = [
-  // No specific safety families in hypothesis families, but we keep brakes protected
-  HYPOTHESIS_FAMILIES.BRAKES_HEAT_DRAG,
+// Component-level exclusions (NOT system-level)
+const EXCLUDABLE_COMPONENTS = [
+  { id: "alternator", label: "Alternator", category: "electrical" },
+  { id: "battery", label: "Battery", category: "electrical" },
+  { id: "starter", label: "Starter Motor", category: "electrical" },
+  { id: "spark_plugs", label: "Spark Plugs", category: "ignition" },
+  { id: "ignition_coils", label: "Ignition Coils", category: "ignition" },
+  { id: "fuel_pump", label: "Fuel Pump", category: "fuel" },
+  { id: "fuel_filter", label: "Fuel Filter", category: "fuel" },
+  { id: "fuel_injectors", label: "Fuel Injectors", category: "fuel" },
+  { id: "water_pump", label: "Water Pump", category: "cooling" },
+  { id: "thermostat", label: "Thermostat", category: "cooling" },
+  { id: "radiator", label: "Radiator", category: "cooling" },
+  { id: "serpentine_belt", label: "Serpentine Belt", category: "mechanical" },
+  { id: "timing_belt", label: "Timing Belt/Chain", category: "mechanical" },
+  { id: "wheel_bearing", label: "Wheel Bearing", category: "suspension" },
+  { id: "cv_joint", label: "CV Joint/Axle", category: "drivetrain" },
+  { id: "mass_airflow", label: "MAF Sensor", category: "sensors" },
+  { id: "o2_sensor", label: "O2 Sensor", category: "sensors" },
+  { id: "catalytic_converter", label: "Catalytic Converter", category: "exhaust" },
+  { id: "ac_compressor", label: "A/C Compressor", category: "hvac" },
+  { id: "blower_motor", label: "Blower Motor", category: "hvac" },
 ];
 
-const EXCLUDABLE_FAMILIES: HypothesisFamilyId[] = Object.values(HYPOTHESIS_FAMILIES).filter(
-  (f) => !PROTECTED_FAMILIES.includes(f) && f !== HYPOTHESIS_FAMILIES.HVAC_SECONDARY
-);
+// Safety-critical components that CANNOT be excluded
+const PROTECTED_COMPONENTS = [
+  "brake_pads",
+  "brake_rotors",
+  "brake_calipers",
+  "brake_lines",
+  "master_cylinder",
+  "abs_module",
+  "steering_rack",
+  "tie_rods",
+  "ball_joints",
+];
 
-export function ProControls({ isPro, excludedFamilies, onExcludedChange }: ProControlsProps) {
+export function ProControls({ isPro, excludedComponents, onExcludedChange }: ProControlsProps) {
   const [showWarning, setShowWarning] = useState(false);
 
-  const handleToggle = (family: HypothesisFamilyId) => {
+  const handleToggle = (componentId: string) => {
     if (!isPro) return;
 
-    const newExcluded = new Set(excludedFamilies);
-    if (newExcluded.has(family)) {
-      newExcluded.delete(family);
+    const newExcluded = new Set(excludedComponents);
+    if (newExcluded.has(componentId)) {
+      newExcluded.delete(componentId);
     } else {
-      newExcluded.add(family);
+      newExcluded.add(componentId);
       if (!showWarning) setShowWarning(true);
     }
     onExcludedChange(newExcluded);
@@ -74,6 +100,13 @@ export function ProControls({ isPro, excludedFamilies, onExcludedChange }: ProCo
     );
   }
 
+  // Group components by category
+  const grouped = EXCLUDABLE_COMPONENTS.reduce((acc, comp) => {
+    if (!acc[comp.category]) acc[comp.category] = [];
+    acc[comp.category].push(comp);
+    return acc;
+  }, {} as Record<string, typeof EXCLUDABLE_COMPONENTS>);
+
   return (
     <div
       style={{
@@ -88,26 +121,26 @@ export function ProControls({ isPro, excludedFamilies, onExcludedChange }: ProCo
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <span style={{ fontSize: 18 }}>⚡</span>
-          <span style={{ fontWeight: 600, fontSize: 14 }}>Known Good (Pro)</span>
+          <span style={{ fontWeight: 600, fontSize: 14 }}>Known Good Components (Pro)</span>
         </div>
-        {excludedFamilies.size > 0 && (
+        {excludedComponents.size > 0 && (
           <button
             className="button"
             onClick={handleClearAll}
             style={{ padding: "4px 10px", fontSize: 11 }}
             data-testid="btn-clear-exclusions"
           >
-            Clear All
+            Clear All ({excludedComponents.size})
           </button>
         )}
       </div>
 
       <p style={{ fontSize: 12, opacity: 0.8, marginBottom: 12 }}>
-        Mark components you've recently replaced or verified as "known good". Their diagnostic weight will be reduced for this run only.
+        Mark specific components you've recently replaced or verified. Their diagnostic weight will be reduced for this run only.
       </p>
 
       {/* Warning */}
-      {showWarning && excludedFamilies.size > 0 && (
+      {showWarning && excludedComponents.size > 0 && (
         <div
           style={{
             padding: 10,
@@ -118,37 +151,45 @@ export function ProControls({ isPro, excludedFamilies, onExcludedChange }: ProCo
           }}
           data-testid="pro-warning"
         >
-          ⚠️ <strong>Warning:</strong> Excluding components may reduce diagnostic accuracy and could lead to misdiagnosis. Use only when you're certain a component is functioning correctly.
+          ⚠️ <strong>Warning:</strong> May reduce accuracy or cause misdiagnosis. Only exclude components you are certain are functioning correctly.
         </div>
       )}
 
-      {/* Excludable families */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 8 }}>
-        {EXCLUDABLE_FAMILIES.map((family) => {
-          const isExcluded = excludedFamilies.has(family);
-          return (
-            <button
-              key={family}
-              className="button"
-              onClick={() => handleToggle(family)}
-              style={{
-                padding: "8px 12px",
-                fontSize: 12,
-                textAlign: "left",
-                background: isExcluded ? "rgba(139,92,246,0.3)" : undefined,
-                borderColor: isExcluded ? "rgba(139,92,246,0.6)" : undefined,
-              }}
-              data-testid={`btn-exclude-${family}`}
-            >
-              {isExcluded ? "✓ " : ""}{HYPOTHESIS_FAMILY_LABELS[family]}
-            </button>
-          );
-        })}
+      {/* Component groups */}
+      <div style={{ display: "grid", gap: 12 }}>
+        {Object.entries(grouped).map(([category, components]) => (
+          <div key={category}>
+            <div style={{ fontSize: 11, opacity: 0.6, marginBottom: 6, textTransform: "uppercase" }}>
+              {category}
+            </div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {components.map((comp) => {
+                const isExcluded = excludedComponents.has(comp.id);
+                return (
+                  <button
+                    key={comp.id}
+                    className="button"
+                    onClick={() => handleToggle(comp.id)}
+                    style={{
+                      padding: "6px 10px",
+                      fontSize: 11,
+                      background: isExcluded ? "rgba(139,92,246,0.3)" : undefined,
+                      borderColor: isExcluded ? "rgba(139,92,246,0.6)" : undefined,
+                    }}
+                    data-testid={`btn-exclude-${comp.id}`}
+                  >
+                    {isExcluded ? "✓ " : ""}{comp.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Protected notice */}
       <p style={{ fontSize: 11, opacity: 0.5, marginTop: 12, marginBottom: 0 }}>
-        Note: Safety-critical systems (brakes) cannot be excluded.
+        Note: Safety-critical components (brakes, steering) cannot be excluded.
       </p>
     </div>
   );
