@@ -191,7 +191,7 @@ export function DiagnosticFlow({ vehicle, observations, isPro, onResult }: Diagn
       {/* Pro Controls */}
       <ProControls
         isPro={isPro}
-        excludedFamilies={excludedFamilies}
+        excludedComponents={excludedComponents}
         onExcludedChange={handleExcludedChange}
       />
 
