@@ -256,6 +256,8 @@ export function App() {
             result={lastResult}
             scores={lastScores}
             knownIssues={knownIssues}
+            vehicle={activeVehicle}
+            observations={observations}
           />
         )}
         {tab === "results" && !lastResult && (
