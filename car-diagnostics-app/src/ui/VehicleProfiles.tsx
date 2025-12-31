@@ -30,8 +30,8 @@ type VehicleProfilesProps = {
 type Mode = "list" | "create" | "edit" | "clone";
 
 export function VehicleProfiles({ onVehicleChange }: VehicleProfilesProps) {
-  const [vehicles, setVehicles] = useState<Vehicle[]>(getVehicles);
-  const [activeId, setActiveId] = useState<string | null>(getActiveVehicleId);
+  const [vehicles, setVehicles] = useState<Vehicle[]>(() => getVehicles());
+  const [activeId, setActiveId] = useState<string | null>(() => getActiveVehicleId());
   const [mode, setMode] = useState<Mode>("list");
   const [editingVehicle, setEditingVehicle] = useState<Vehicle | null>(null);
   const [cloneSource, setCloneSource] = useState<Vehicle | null>(null);
