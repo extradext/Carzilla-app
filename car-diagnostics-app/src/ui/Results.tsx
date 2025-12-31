@@ -269,6 +269,166 @@ export function Results({ result, scores, knownIssues = [], vehicle, observation
       {/* Context Panel */}
       <ContextPanel context={contextEvaluation} />
 
+      {/* Post-Result Actions */}
+      <div
+        style={{
+          marginTop: 20,
+          padding: 16,
+          background: "rgba(255,255,255,0.02)",
+          borderRadius: 8,
+          border: "1px solid rgba(255,255,255,0.06)",
+        }}
+        data-testid="post-result-actions"
+      >
+        <h3 style={{ margin: "0 0 12px", fontSize: 14 }}>Actions</h3>
+        
+        {/* Export Message */}
+        {exportMessage && (
+          <div
+            style={{
+              padding: 8,
+              marginBottom: 12,
+              background: "rgba(34,197,94,0.2)",
+              borderRadius: 6,
+              fontSize: 13,
+              textAlign: "center",
+            }}
+            data-testid="export-message"
+          >
+            ✓ {exportMessage}
+          </div>
+        )}
+
+        {/* Feedback Submitted Message */}
+        {feedbackSubmitted && (
+          <div
+            style={{
+              padding: 8,
+              marginBottom: 12,
+              background: "rgba(59,130,246,0.2)",
+              borderRadius: 6,
+              fontSize: 13,
+              textAlign: "center",
+            }}
+            data-testid="feedback-submitted"
+          >
+            ✓ Feedback exported — Thank you!
+          </div>
+        )}
+
+        {/* I think it's something else */}
+        {!isSafetyOverride && !showFeedbackForm && (
+          <div style={{ marginBottom: 12 }}>
+            <div style={{ fontSize: 12, opacity: 0.7, marginBottom: 8 }}>
+              Not what you expected?
+            </div>
+            <div className="row" style={{ flexWrap: "wrap", gap: 8 }}>
+              {onRerunExcluding && result.topHypothesis && (
+                <button
+                  className="button"
+                  onClick={handleRerunExcluding}
+                  style={{ padding: "8px 12px", fontSize: 12 }}
+                  data-testid="btn-rerun-excluding"
+                >
+                  Re-run excluding "{getHypothesisLabel(result.topHypothesis)}"
+                </button>
+              )}
+              <button
+                className="button"
+                onClick={() => setShowFeedbackForm(true)}
+                style={{ padding: "8px 12px", fontSize: 12 }}
+                data-testid="btn-submit-feedback"
+              >
+                Submit feedback to developer
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Feedback Form */}
+        {showFeedbackForm && (
+          <div
+            style={{
+              padding: 12,
+              background: "rgba(0,0,0,0.2)",
+              borderRadius: 8,
+              marginBottom: 12,
+            }}
+            data-testid="feedback-form"
+          >
+            <h4 style={{ margin: "0 0 8px", fontSize: 13 }}>Submit Feedback</h4>
+            <p style={{ fontSize: 12, opacity: 0.7, marginBottom: 8 }}>
+              Your feedback helps improve the diagnostic engine. Include what you think the actual issue is.
+            </p>
+            <textarea
+              className="button"
+              placeholder="e.g., I believe the issue is actually the fuel pump because..."
+              value={feedbackNotes}
+              onChange={(e) => setFeedbackNotes(e.target.value)}
+              style={{
+                width: "100%",
+                minHeight: 80,
+                resize: "vertical",
+                boxSizing: "border-box",
+                marginBottom: 8,
+              }}
+              data-testid="feedback-notes"
+            />
+            <div className="row" style={{ gap: 8 }}>
+              <button
+                className="button"
+                onClick={handleSubmitFeedback}
+                style={{ padding: "8px 12px", fontSize: 12 }}
+                data-testid="btn-send-feedback"
+              >
+                Export Feedback
+              </button>
+              <button
+                className="button"
+                onClick={() => setShowFeedbackForm(false)}
+                style={{ padding: "8px 12px", fontSize: 12, opacity: 0.7 }}
+                data-testid="btn-cancel-feedback"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Save / Export */}
+        <div>
+          <div style={{ fontSize: 12, opacity: 0.7, marginBottom: 8 }}>
+            Save this result:
+          </div>
+          <div className="row" style={{ flexWrap: "wrap", gap: 8 }}>
+            <button
+              className="button"
+              onClick={() => handleExport("text")}
+              style={{ padding: "8px 12px", fontSize: 12 }}
+              data-testid="btn-export-text"
+            >
+              📄 Download Report
+            </button>
+            <button
+              className="button"
+              onClick={() => handleExport("json")}
+              style={{ padding: "8px 12px", fontSize: 12 }}
+              data-testid="btn-export-json"
+            >
+              📋 Export JSON
+            </button>
+            <button
+              className="button"
+              onClick={handleCopyToClipboard}
+              style={{ padding: "8px 12px", fontSize: 12 }}
+              data-testid="btn-copy-clipboard"
+            >
+              📎 Copy to Clipboard
+            </button>
+          </div>
+        </div>
+      </div>
+
       {/* Result ID for reference */}
       <div style={{ marginTop: 16, fontSize: 11, opacity: 0.4 }} data-testid="result-id">
         Result ID: {result.id || "N/A"}
