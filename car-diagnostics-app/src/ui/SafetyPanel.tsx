@@ -2,11 +2,11 @@
  * /src/ui/SafetyPanel.tsx
  * PRESENTATION ONLY
  *
- * Safety Hard Stops (REROUTES, NOT BLOCKS)
- * - Safety triggers DO NOT block diagnosis
- * - Display contextual safety instructions
- * - Require user acknowledgment
- * - Then allow diagnosis to continue
+ * Safety Panel (ADVISORY ONLY)
+ * - NO hard stops
+ * - NO blocking
+ * - NO forced acknowledgments
+ * - Safety guidance is informational only
  */
 
 import React from "react";
@@ -15,8 +15,6 @@ import { OBSERVATION_IDS } from "../core/observations";
 
 type SafetyPanelProps = {
   safety: SafetyEvaluation;
-  onAcknowledge: () => void;
-  acknowledged: boolean;
 };
 
 type SafetyGuidance = {
@@ -90,95 +88,60 @@ const SAFETY_GUIDANCE: Record<SafetyTriggerId, SafetyGuidance> = {
   },
 };
 
-export function SafetyPanel({ safety, onAcknowledge, acknowledged }: SafetyPanelProps) {
+export function SafetyPanel({ safety }: SafetyPanelProps) {
   if (!safety.safetyOverride) return null;
 
   return (
     <div
       style={{
-        background: "rgba(239, 68, 68, 0.15)",
-        border: "2px solid rgba(239, 68, 68, 0.5)",
-        borderRadius: 12,
+        background: "rgba(239, 68, 68, 0.1)",
+        border: "1px solid rgba(239, 68, 68, 0.3)",
+        borderRadius: 8,
         padding: 16,
         marginBottom: 16,
       }}
       data-testid="safety-panel"
     >
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-        <span style={{ fontSize: 24 }}>⚠️</span>
-        <h3 style={{ margin: 0, color: "#fca5a5" }}>Safety Alert</h3>
+        <span style={{ fontSize: 20 }}>⚠️</span>
+        <h3 style={{ margin: 0, color: "#fca5a5", fontSize: 15 }}>Safety Information</h3>
       </div>
 
-      <p style={{ fontSize: 14, marginBottom: 16, opacity: 0.9 }}>
-        One or more safety-critical conditions have been detected. Please review the guidance below before proceeding.
+      <p style={{ fontSize: 13, marginBottom: 12, opacity: 0.8 }}>
+        The following safety-related observations have been noted. Review this guidance as needed.
       </p>
 
       {/* Guidance for each triggered warning */}
-      <div style={{ display: "grid", gap: 12 }}>
+      <div style={{ display: "grid", gap: 10 }}>
         {safety.warnings.map((triggerId) => {
           const guidance = SAFETY_GUIDANCE[triggerId];
           if (!guidance) return null;
 
           return (
-            <div
+            <details
               key={triggerId}
               style={{
-                background: "rgba(0,0,0,0.2)",
-                borderRadius: 8,
-                padding: 12,
+                background: "rgba(0,0,0,0.15)",
+                borderRadius: 6,
+                padding: 10,
               }}
               data-testid={`safety-guidance-${triggerId}`}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                <span style={{ fontSize: 20 }}>{guidance.icon}</span>
-                <span style={{ fontWeight: 600 }}>{guidance.title}</span>
-              </div>
-              <ul style={{ margin: 0, paddingLeft: 20, fontSize: 13, opacity: 0.9 }}>
+              <summary style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 16 }}>{guidance.icon}</span>
+                <span style={{ fontWeight: 500, fontSize: 13 }}>{guidance.title}</span>
+              </summary>
+              <ul style={{ margin: "8px 0 0", paddingLeft: 20, fontSize: 12, opacity: 0.85 }}>
                 {guidance.instructions.map((instruction, i) => (
-                  <li key={i} style={{ marginBottom: 4 }}>
+                  <li key={i} style={{ marginBottom: 3 }}>
                     {instruction}
                   </li>
                 ))}
               </ul>
-            </div>
+            </details>
           );
         })}
       </div>
-
-      {/* Acknowledgment */}
-      {!acknowledged ? (
-        <div style={{ marginTop: 16, textAlign: "center" }}>
-          <button
-            className="button"
-            onClick={onAcknowledge}
-            style={{
-              background: "rgba(239, 68, 68, 0.3)",
-              borderColor: "rgba(239, 68, 68, 0.6)",
-              padding: "12px 24px",
-            }}
-            data-testid="btn-acknowledge-safety"
-          >
-            I am safe / vehicle not in motion — Continue
-          </button>
-          <p style={{ fontSize: 11, opacity: 0.6, marginTop: 8 }}>
-            Diagnosis will continue with safety information displayed.
-          </p>
-        </div>
-      ) : (
-        <div
-          style={{
-            marginTop: 16,
-            padding: 8,
-            background: "rgba(34, 197, 94, 0.2)",
-            borderRadius: 6,
-            textAlign: "center",
-            fontSize: 13,
-          }}
-          data-testid="safety-acknowledged"
-        >
-          ✓ Acknowledged — Diagnosis may proceed
-        </div>
-      )}
     </div>
   );
 }
