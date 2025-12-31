@@ -31,7 +31,6 @@ type DiagnosticFlowProps = {
 export function DiagnosticFlow({ vehicle, observations, isPro, onResult }: DiagnosticFlowProps) {
   const [entryAnchor, setEntryAnchor] = useState<string>("wont_start");
   const [safety, setSafety] = useState<SafetyEvaluation | null>(null);
-  const [safetyAcknowledged, setSafetyAcknowledged] = useState(false);
   const [excludedFamilies, setExcludedFamilies] = useState<Set<HypothesisFamilyId>>(new Set());
   const [isRunning, setIsRunning] = useState(false);
 
@@ -41,15 +40,11 @@ export function DiagnosticFlow({ vehicle, observations, isPro, onResult }: Diagn
   const handleRunDiagnosis = () => {
     if (!vehicle) return;
 
-    // First, evaluate safety
+    // Evaluate safety for advisory display (does NOT block)
     const safetyEval = evaluateSafety(observations);
     setSafety(safetyEval);
 
-    // If safety triggered and not acknowledged, stop and show safety panel
-    if (safetyEval.safetyOverride && !safetyAcknowledged) {
-      return;
-    }
-
+    // Run diagnosis immediately - safety is advisory only
     runDiagnosisEngine();
   };
 
@@ -74,12 +69,6 @@ export function DiagnosticFlow({ vehicle, observations, isPro, onResult }: Diagn
       onResult(output.result, output.scores);
       setIsRunning(false);
     }, 300);
-  };
-
-  const handleSafetyAcknowledge = () => {
-    setSafetyAcknowledged(true);
-    // Continue with diagnosis after acknowledgment
-    runDiagnosisEngine();
   };
 
   const handleExcludedChange = (excluded: Set<HypothesisFamilyId>) => {
@@ -144,13 +133,9 @@ export function DiagnosticFlow({ vehicle, observations, isPro, onResult }: Diagn
         </div>
       </div>
 
-      {/* Safety Panel (if triggered) */}
+      {/* Safety Panel (advisory only - does not block) */}
       {safety && safety.safetyOverride && (
-        <SafetyPanel
-          safety={safety}
-          onAcknowledge={handleSafetyAcknowledge}
-          acknowledged={safetyAcknowledged}
-        />
+        <SafetyPanel safety={safety} />
       )}
 
       {/* Entry Anchor Selection */}
