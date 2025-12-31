@@ -1,114 +1,176 @@
-<analysis>**original_problem_statement:**
-The user wants to build a Car Diagnostics App. The user provided an authoritative repository structure and strict file contracts. The agent's role is to act as a builder, not a designer, and assemble the application by scaffolding the project, implementing the specified logic, and wiring the UI. Key rules include not inventing or altering diagnostic logic in the  and  directories, and ensuring the UI only consumes outputs from the diagnostic engine. All work must be incremental and strictly follow the user's explicit instructions.
+<analysis>
+🚗 Car Diagnostics App — Compressed Fork Handoff (Authoritative)
+Project: Car Diagnostics App
+Path: /app/car-diagnostics-app
+Stack: Vite + React + TypeScript
+Architecture: STRICT separation — core logic is immutable
+🔒 Non-Negotiable Rules
+DO NOT modify anything in:
+/src/core/*
+/src/diagnostics/*
+No new diagnostic rules
+No scoring, safety, confidence, or measurement changes
+UI is presentation + orchestration only
+Engine decides outcomes; UI never does
+If unsure → add TODO, do not guess
+✅ Foundation State (This Fork Starts Here)
+Diagnostic engine fully implemented and validated
+Cross-family spillover logic verified (battery vs alternator)
+Engine → UI wiring functional
+Vite preview configured (allowedHosts: true)
+No backend; local-first design
+🚘 Vehicle Profiles (Hard Gate)
+Diagnosis cannot start without an active vehicle profile
+Profile requires: Name, Make, Model
+Multiple vehicles supported
+Switching vehicles restores all state:
+Observations
+Results
+Maintenance
+Mileage
+New profiles start empty
+Clone profile supported (dev + advanced users)
+🧠 Observations System (Persistent Memory)
+Observations persist per vehicle
+Do not reset between diagnostic runs
+User manually toggles on/off
+Categorized (battery, brakes, suspension, HVAC, smells, etc.)
+UNSURE / SKIP = neutral
+Free-text “memory” observations allowed
+These feed diagnostics, but are not a forced Q&A flow
+🔁 Diagnostic Flow
+Uses persisted observations
+Uses active vehicleId
+Engine invocation unchanged
+No random diagnosis
+No dropdown-only diagnosis
+Diagnosis reflects selected observations
+⚠️ Safety Handling (Advisory, Not Blocking)
+No hard overrides
+App-level disclaimer: “Use diagnostics only while stationary”
+Safety content lives in a Safety panel / Results section
+Safety guidance is informational only
+No forced acknowledgments or flow interruption
+📊 Results + Context
+Show:
+Top hypothesis
+Confidence band
+Supporting observations
+Context panel:
+supports
+± related
+– contradicts
+Context never alters scoring
+💰 Pro Features (Explicit + Warned)
+Reduced-Weight / Exclusion Tool
+Pro-only
+Component-level, not system-level
+(e.g., alternator, battery, caliper, fuel pump)
+Per-run only, never permanent
+Cannot affect safety-critical items
+Warning required: “May reduce accuracy or cause misdiagnosis”
+🔄 Post-Result Actions
+Button: “I think it’s something else”
+Option 1: Re-run diagnosis excluding current top hypothesis
+Option 2: Submit feedback to developer
+Feedback payload includes:
+Observations
+Results
+User notes
+Results must be savable + exportable
+Feedback/export works in V1 and is forward-compatible with V2
+🔧 Maintenance + Mileage
+Oil changes, brakes, component replacements
+Rolling mileage average
+Countdown to next service
+Data persists per vehicle
+⚙️ Settings
+Notifications
+Seasonal reminders
+Oil reminders
+🧪 Execution Order (Strict)
+Vehicle profiles (gate)
+Observation persistence
+Diagnostic wiring
+Advisory safety UI
+Results + context
+Maintenance
+Pro controls
+Optional dev conveniences last
+🛑 Final Instruction
+Implement continuously.
+Do not pause or redesign unless a contract is violated.
 
-**User's preferred language**: English
 
-**what currently exists?**
-A complete Vite + React + TypeScript project scaffold for the  has been created at . The core diagnostic logic (), static definitions (), and orchestration engine () are fully implemented according to the user's specifications. A minimal UI is wired to call the engine with no inputs and display the  and  of the result. The development server is configured and confirmed to be working.
+🛑 EMERGENT — DO NOT HALLUCINATE / ANTI-DRIFT GUARDRAIL
+YOU ARE A BUILDER, NOT A DESIGNER.
+This project already has:
+A defined architecture
+Locked diagnostic logic
+Explicit UX intent
+Known constraints
+Your job is to assemble, not invent.
+🚫 ABSOLUTELY FORBIDDEN
+Do NOT invent diagnostic logic, heuristics, weights, or rules
+Do NOT infer missing behavior
+Do NOT “improve” logic
+Do NOT refactor for elegance
+Do NOT redesign UX flows unless explicitly instructed
+Do NOT replace elimination flows with dropdowns or shortcuts
+Do NOT generate “reasonable assumptions”
+Do NOT simulate intelligence or reasoning not present in the codebase
+If you are unsure → STOP and leave a TODO comment.
+🔒 IMMUTABLE DIRECTORIES
+You may not modify or reinterpret anything inside:
+Copy code
 
-**Last working item**:
--   **Last item agent was working:** The agent provided a State of Project Summary as requested by the user, summarizing the project's current status, architecture, and implemented features. The last active development task was fixing a bug in the diagnostic rules and verifying the fix.
--   **Status:** COMPLETED
--   **Agent Testing Done:** Y
--   **Which testing method agent to use?** NA
--   **User Testing Done:** Y
-
-**All Pending/In progress Issue list**:
--   None. The single bug identified during testing was resolved and verified.
-
-**In progress Task List**:
--   None. The project is at a clean checkpoint, awaiting the next development phase.
-
-**Upcoming and Future Tasks**
-
--   **Upcoming Tasks:**
-    -   **P0: Implement UI for Observation Selection:** Currently, the diagnostic engine is called with an empty array of observations. The next critical step is to build the UI in  to allow users to select symptoms (observations) from the catalog defined in  and pass them to the engine.
-    -   **P1: Implement Vehicle Profile Management:** The UI for managing vehicle profiles () is a placeholder. This task involves building the UI to create, edit, and select vehicle profiles.
-    -   **P2: Enable Local Storage Persistence:** The  file is a placeholder. This task involves implementing local storage logic to persist vehicle data, maintenance history, and diagnostic results between sessions.
-
--   **Future Tasks:**
-    -   Wire up the remaining UI components (, ).
-    -   Integrate the  output into the UI to provide users with contextual information about their diagnosis.
-    -   Implement a backend synchronization mechanism as outlined in .
-
-**Completed work in this session**
--   Scaffolded the entire  project structure with Vite, React, and TypeScript.
--   Implemented all core logic modules (, , , , , ).
--   Implemented all declarative diagnostic definition modules (, , ).
--   Implemented the orchestration  and .
--   Wired the basic UI (, , ) to run the engine and display a result.
--   Diagnosed and resolved a development server preview issue by updating .
--   Performed a comprehensive end-to-end logic validation and fixed the one identified bug in .
--   Provided a complete project state summary to the user.
-
-**Earlier issues found/mentioned but not fixed**
--   None.
-
-**Known issue recurrence from previous fork**
--   N/A
-
-**Code Architecture**
-
-
-**Key Technical Concepts**
--   **Frontend:** React, TypeScript, Vite
--   **Architecture:** The application follows a strict separation of concerns: pure logic (), static data (), orchestration (), and presentation (). It's a frontend-only application designed for local-first operation.
--   **Diagnostic Logic:** A deterministic, rule-based system that scores diagnostic hypotheses based on weighted observations, applying cross-family multipliers, caps, and conflict dampening.
-
-**key DB schema**
--   N/A. The application is database-free. It uses TypeScript models for data structures intended for local storage. Key models include , , and .
-
-**changes in tech stack**
--   None. The stack was established at the beginning of the project.
-
-**All files of reference**
--   : All files within this directory were created and implemented as per user specifications.
--   : Recently modified to fix a bug in the observation-to-family mapping. It is the source of truth for how observations influence diagnostic scores.
--   : Configured to ensure the dev server works correctly in the environment.
-
-**Areas that need refactoring**:
--   The type definitions in  could be improved. The uid=0(root) gid=0(root) groups=0(root) and  properties are typed as , but the engine correctly returns  in some cases, forcing the use of type casting () in . Updating the model to  would improve type safety.
-
-**key api endpoints**
--   N/A. This is a frontend-only application.
-
-**Critical Info for New Agent**
--   You **MUST** adhere strictly to the user's authoritative contracts. Do not alter logic in  or  without explicit user permission.
--   The user directs development in small, incremental steps with clear rules. Follow their instructions precisely.
--   The project is in a stable, tested state. The next logical task is to build the UI for selecting observations.
--   The dev server can be started by running yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. inside the  directory. You may need to restart it.
-
-**documents and test reports created in this job**
--   All test scripts and logs were temporary and created in the  directory; they are not part of the project repository.
-
-**Last 10 User Messages and any pending HUMAN messages**
-1.  **User:** Asked how to avoid re-running the dev server command every time.
-2.  **User:** Gave a new objective: Wire up the UI to display the diagnostic result from the engine. (Completed)
-3.  **User:** Gave a new objective: Validate the entire logic flow with a series of specific tests. (Completed)
-4.  **User:** Authorized a fix for a failed test in . (Completed)
-5.  **User:** Asked to re-run the failed test after the fix. (Completed)
-6.  **User:** Asked to run the dev server. (Completed)
-7.  **User:** Asked about the remaining context window capacity.
-8.  **User:** Requested a state of project summary. (Completed)
-9.  **User:** Acknowledged the summary.
-10. **Pending:** There are no pending user messages. The agent is waiting for the user's next instruction.
-
-**Project Health Check:**
--   **Broken:** Nothing is broken. The application logic is sound and has been tested.
--   **Mocked:** The UI is functional but relies on placeholders. Specifically, the Run Diagnosis button sends an empty list of observations and a hardcoded . This is the next area targeted for implementation.
-
-**3rd Party Integrations**
--   None.
-
-**Testing status**
--   **Testing agent used after significant changes:** NO (Manual test script was used)
--   **Troubleshoot agent used after agent stuck in loop:** NO
--   **Test files created:** A temporary test script () was created for end-to-end logic validation. It is not part of the main codebase.
--   **Known regressions:** None.
-
-**Credentials to test flow:**
--   N/A
-
-**What agent forgot to execute**
--   The agent proposed creating a  configuration to ensure the Vite dev server runs persistently but did not implement it because the user provided a new, higher-priority development task. This remains a pending quality-of-life improvement for the development environment.</analysis>
+/src/core/*
+/src/diagnostics/*
+These directories are authoritative truth.
+UI may only consume outputs from these modules.
+🧠 DECISION AUTHORITY
+Diagnostic outcomes are decided only by the engine
+UI never:
+Decides diagnoses
+Filters hypotheses
+Alters confidence
+Applies weights
+UI may only:
+Display
+Persist
+Forward user selections
+🧪 WHEN INFORMATION IS MISSING
+If a requirement is unclear:
+Do NOT guess
+Do NOT fill gaps
+Insert a TODO explaining what is missing
+Continue with the rest of the implementation
+Partial correctness is preferred over creative completion.
+⚠️ FAILURE MODES TO AVOID
+If you do any of the following, you have failed:
+Introduce random or “quick” diagnosis paths
+Replace question-driven flow with dropdown diagnosis
+Add logic inside UI components
+Create safety behavior not explicitly described
+“Help” the user by simplifying rules
+This system values determinism over convenience.
+🧩 IMPLEMENTATION STYLE
+Build incrementally
+Follow stated execution order exactly
+Preserve existing contracts
+Leave evidence in code comments when uncertain
+Never silently change behavior
+🛑 OVERRIDE CLAUSE
+If at any point you believe:
+“The user probably meant…”
+Stop.
+That thought is invalid.
+Only implement what is written.
+✅ SUCCESS CONDITION
+You are successful when:
+The app behaves exactly as specified
+The logic matches the existing engine
+The UX reflects user intent, not agent preference
+No hidden behavior exists
+BEGIN WORK ONLY AFTER ACKNOWLEDGING THIS BLOCK.
+</analysis>
