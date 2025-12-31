@@ -161,6 +161,9 @@ export function App() {
 
   return (
     <div className="container" data-testid="app-shell">
+      {/* App-level Safety Disclaimer (shown once per session) */}
+      {showDisclaimer && <SafetyDisclaimer onDismiss={handleDismissDisclaimer} />}
+
       <header style={{ marginBottom: 20 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
           <div>
