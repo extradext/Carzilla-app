@@ -52,9 +52,15 @@ function getHypothesisLabel(id: string | null): string {
   return HYPOTHESIS_FAMILY_LABELS[id as HypothesisFamilyId] ?? id;
 }
 
-export function Results({ result, scores, knownIssues = [] }: ResultsProps) {
+export function Results({ result, scores, knownIssues = [], vehicle, observations, onRerunExcluding }: ResultsProps) {
   const isSafetyOverride = result.topHypothesis === "SAFETY_OVERRIDE";
   const confidenceBand = getConfidenceBand(result.confidence);
+
+  // Post-result actions state
+  const [showFeedbackForm, setShowFeedbackForm] = useState(false);
+  const [feedbackNotes, setFeedbackNotes] = useState("");
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+  const [exportMessage, setExportMessage] = useState<string | null>(null);
 
   // Evaluate context
   const contextEvaluation = useMemo(() => {
@@ -70,6 +76,55 @@ export function Results({ result, scores, knownIssues = [] }: ResultsProps) {
       .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))
       .slice(0, 5);
   }, [scores]);
+
+  // Handle re-run excluding top hypothesis
+  const handleRerunExcluding = () => {
+    if (onRerunExcluding && result.topHypothesis) {
+      onRerunExcluding(result.topHypothesis);
+    }
+  };
+
+  // Handle feedback submission
+  const handleSubmitFeedback = () => {
+    const payload = exportDiagnosticResultJSON({
+      result,
+      vehicle,
+      observations,
+      userNotes: feedbackNotes,
+      scores,
+    });
+    
+    // For V1: Download feedback as JSON file
+    // Forward-compatible with V2 API submission
+    downloadAsFile(payload, `feedback-${result.id}.json`, "application/json");
+    setFeedbackSubmitted(true);
+    setShowFeedbackForm(false);
+  };
+
+  // Handle export
+  const handleExport = (format: "text" | "json") => {
+    const payload = { result, vehicle, observations, userNotes: feedbackNotes, scores };
+    
+    if (format === "text") {
+      const content = exportDiagnosticResult(payload);
+      downloadAsFile(content, `diagnosis-${result.id}.txt`, "text/plain");
+      setExportMessage("Report downloaded!");
+    } else {
+      const content = exportDiagnosticResultJSON(payload);
+      downloadAsFile(content, `diagnosis-${result.id}.json`, "application/json");
+      setExportMessage("JSON exported!");
+    }
+    
+    setTimeout(() => setExportMessage(null), 2000);
+  };
+
+  // Handle copy to clipboard
+  const handleCopyToClipboard = async () => {
+    const content = exportDiagnosticResult({ result, vehicle, observations, scores });
+    const success = await copyToClipboard(content);
+    setExportMessage(success ? "Copied to clipboard!" : "Copy failed");
+    setTimeout(() => setExportMessage(null), 2000);
+  };
 
   return (
     <section className="card" data-testid="results-panel">
