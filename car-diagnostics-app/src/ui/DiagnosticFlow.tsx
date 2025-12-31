@@ -218,9 +218,9 @@ export function DiagnosticFlow({ vehicle, observations, isPro, onResult }: Diagn
       {/* Debug info */}
       <div style={{ marginTop: 12 }} data-testid="diagnostic-flow-debug">
         <div className="badge">Entry: {entryAnchor}</div>
-        {excludedFamilies.size > 0 && (
+        {excludedComponents.size > 0 && (
           <div className="badge" style={{ marginLeft: 8, background: "rgba(139,92,246,0.2)" }}>
-            {excludedFamilies.size} excluded
+            {excludedComponents.size} excluded
           </div>
         )}
       </div>
