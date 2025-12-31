@@ -85,7 +85,7 @@ export function exportDiagnosticResult(payload: ExportPayload): string {
     lines.push("ALL RECORDED OBSERVATIONS:");
     observations.forEach((obs) => {
       const label = getObservationLabel(obs.id);
-      const response = obs.response === "yes" ? "✓ YES" : obs.response === "no" ? "✗ NO" : "? UNSURE";
+      const response = obs.value === "YES" ? "✓ YES" : obs.value === "NO" ? "✗ NO" : "? UNSURE/SKIP";
       lines.push(`  ${response} - ${label}`);
     });
     lines.push("");
