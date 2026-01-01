@@ -157,8 +157,15 @@ function applyBatteryBiasCorrection(
   // This is critical because there is no "starter" family in the current system,
   // so we boost "grounds" as the closest proxy for electrical/connection issues
   
-  if (batteryPenalty > 0.4) {
+  // BUT: Do NOT boost grounds if there's clear fuel system evidence
+  // Normal crank + no pump sound = fuel issue, not grounds
+  const hasFuelEvidence = hasYes(OBSERVATION_IDS.FUEL_PUMP_SOUND_NOT_HEARD) ||
+                          hasYes(OBSERVATION_IDS.LOSS_OF_POWER_UPHILL) ||
+                          hasYes(OBSERVATION_IDS.STALLS_ON_ACCELERATION);
+  
+  if (batteryPenalty > 0.4 && !hasFuelEvidence) {
     // Grounds/electrical connections become more likely when battery is ruled out
+    // BUT only if there's no clear fuel system evidence
     const groundsBoost = batteryPenalty * 0.6;
     if (correctedScores.grounds !== undefined) {
       correctedScores.grounds = Math.max(correctedScores.grounds || 0, groundsBoost * 10);
@@ -169,6 +176,18 @@ function applyBatteryBiasCorrection(
     // If there was a single click, it's even more likely to be a connection/solenoid issue
     if (clickingOrSilence) {
       correctedScores.grounds = (correctedScores.grounds || 0) + 5;
+    }
+  }
+  
+  // === FUEL SYSTEM BOOST ===
+  // When fuel pump sound is not heard AND engine cranks normally,
+  // fuel system is the primary suspect
+  if (hasFuelEvidence && hasNo(OBSERVATION_IDS.ENGINE_CRANKS_SLOWLY)) {
+    const fuelBoost = 15; // Strong boost for fuel when evidence is clear
+    if (correctedScores.fuel !== undefined) {
+      correctedScores.fuel = Math.max(correctedScores.fuel, fuelBoost);
+    } else {
+      correctedScores.fuel = fuelBoost;
     }
   }
   
