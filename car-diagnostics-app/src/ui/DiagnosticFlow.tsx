@@ -657,7 +657,33 @@ const ALL_QUESTIONS: Record<string, Question> = {
         id: "security_off",
         text: "No security lights",
         observations: [],
-        next: "fuel_check",
+        next: "starter_history",
+      },
+    ],
+  },
+
+  // Starter history - behavior-based, no physical tests
+  starter_history: {
+    id: "starter_history",
+    text: "Before today, have you had any issues starting this car?",
+    options: [
+      {
+        id: "recent_issues",
+        text: "Yes - it's been acting up recently",
+        observations: [],
+        next: "intermittent_pattern",
+      },
+      {
+        id: "no_issues",
+        text: "No - it always started fine until now",
+        observations: [],
+        next: "retry_count",
+      },
+      {
+        id: "old_issues",
+        text: "Had issues before but they went away",
+        observations: [],
+        next: "retry_count",
       },
     ],
   },
