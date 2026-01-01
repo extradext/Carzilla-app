@@ -165,6 +165,9 @@ export const observationFamilies: Partial<Record<ObservationId, ObservationFamil
     primary: HYPOTHESIS_FAMILIES.BRAKES_HEAT_DRAG,
     secondary: [HYPOTHESIS_FAMILIES.TIRES_WHEELS],
   },
+  [OBSERVATION_IDS.BRAKE_PEDAL_SINKS]: {
+    primary: HYPOTHESIS_FAMILIES.BRAKES_HEAT_DRAG,
+  },
   [OBSERVATION_IDS.GRINDING_NOISE_WHEN_BRAKING]: {
     primary: HYPOTHESIS_FAMILIES.BRAKES_HEAT_DRAG,
   },
@@ -177,6 +180,26 @@ export const observationFamilies: Partial<Record<ObservationId, ObservationFamil
     secondary: [HYPOTHESIS_FAMILIES.TIRES_WHEELS],
   },
   [OBSERVATION_IDS.BURNING_SMELL_NEAR_WHEEL]: {
+    primary: HYPOTHESIS_FAMILIES.BRAKES_HEAT_DRAG,
+  },
+  // Brake fluid level observations (per brake fluid logic directive)
+  // Low fluid supports brakes but does NOT hard-trigger leak without corroborators
+  [OBSERVATION_IDS.BRAKE_FLUID_LEVEL_LOW]: {
+    primary: HYPOTHESIS_FAMILIES.BRAKES_HEAT_DRAG,
+  },
+  // Normal fluid level also maps to brakes (used for contradiction logic in refinement)
+  [OBSERVATION_IDS.BRAKE_FLUID_LEVEL_NORMAL]: {
+    primary: HYPOTHESIS_FAMILIES.BRAKES_HEAT_DRAG,
+  },
+  // Recent brake service supports brakes (air in lines if spongy)
+  [OBSERVATION_IDS.RECENT_BRAKE_SERVICE]: {
+    primary: HYPOTHESIS_FAMILIES.BRAKES_HEAT_DRAG,
+  },
+  // Visible fluid leaks are strong brake/hydraulic indicators
+  [OBSERVATION_IDS.VISIBLE_FLUID_UNDER_CAR]: {
+    primary: HYPOTHESIS_FAMILIES.BRAKES_HEAT_DRAG,
+  },
+  [OBSERVATION_IDS.VISIBLE_FLUID_NEAR_WHEEL]: {
     primary: HYPOTHESIS_FAMILIES.BRAKES_HEAT_DRAG,
   },
 
