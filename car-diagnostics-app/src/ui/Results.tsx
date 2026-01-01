@@ -1142,6 +1142,108 @@ function getHypothesisLabel(hypothesis: string | null | undefined): string {
   return label || hypothesis.replace(/_/g, " ");
 }
 
+/**
+ * VerificationGuideSection - Collapsible "How to check / verify" guide
+ * Renders ONLY when a guide exists for the diagnosed component.
+ * Does NOT affect scoring or rerun logic.
+ * 
+ * TODO: Add images/video support in future iteration
+ */
+function VerificationGuideSection({ componentId }: { componentId?: string }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const guide = getVerificationGuide(componentId);
+  
+  // Render nothing if no guide exists
+  if (!guide) return null;
+  
+  return (
+    <div
+      className="card"
+      style={{
+        background: "rgba(100,200,255,0.08)",
+        marginBottom: 16,
+        border: "1px solid rgba(100,200,255,0.2)",
+      }}
+      data-testid="verification-guide-section"
+    >
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        style={{
+          background: "transparent",
+          border: "none",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          width: "100%",
+          textAlign: "left",
+          padding: 0,
+          color: "inherit",
+        }}
+        data-testid="verification-guide-toggle"
+      >
+        <span style={{ fontSize: 16 }}>{isOpen ? "▼" : "▶"}</span>
+        <span style={{ fontSize: 16 }}>🔧</span>
+        <h4 style={{ margin: 0, fontSize: 15, fontWeight: 600 }}>
+          How to check / verify this
+        </h4>
+      </button>
+      
+      {isOpen && (
+        <div style={{ marginTop: 16 }} data-testid="verification-guide-content">
+          {/* Description */}
+          <p style={{ margin: "0 0 16px", opacity: 0.85, lineHeight: 1.5, fontSize: 14 }}>
+            {guide.description}
+          </p>
+          
+          {/* Verification Checklist */}
+          <div style={{ marginBottom: guide.notes ? 16 : 0 }}>
+            <strong style={{ fontSize: 13, opacity: 0.7, display: "block", marginBottom: 8 }}>
+              ✓ Safe checks you can do:
+            </strong>
+            <ul style={{ margin: 0, paddingLeft: 20, opacity: 0.9 }}>
+              {guide.checks.map((check, i) => (
+                <li key={i} style={{ marginBottom: 8, lineHeight: 1.4 }}>
+                  {check}
+                </li>
+              ))}
+            </ul>
+          </div>
+          
+          {/* Cautions/Notes */}
+          {guide.notes && (
+            <div
+              style={{
+                padding: 12,
+                background: "rgba(255,200,100,0.15)",
+                borderRadius: 6,
+                border: "1px solid rgba(255,200,100,0.25)",
+              }}
+            >
+              <strong style={{ fontSize: 13 }}>⚠️ Note:</strong>
+              <p style={{ margin: "6px 0 0", fontSize: 13, opacity: 0.9, lineHeight: 1.4 }}>
+                {guide.notes}
+              </p>
+            </div>
+          )}
+          
+          {/* TODO: Future - media/video section */}
+          {/* 
+          {guide.mediaUrls && guide.mediaUrls.length > 0 && (
+            <div style={{ marginTop: 16 }}>
+              <strong>Helpful videos/images:</strong>
+              {guide.mediaUrls.map((url, i) => (
+                <a key={i} href={url} target="_blank" rel="noopener noreferrer">{url}</a>
+              ))}
+            </div>
+          )}
+          */}
+        </div>
+      )}
+    </div>
+  );
+}
+
 type ResultsProps = {
   result: DiagnosticResult;
   vehicleId: string | null;
