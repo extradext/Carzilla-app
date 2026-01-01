@@ -125,7 +125,7 @@ export function App() {
               Car Diagnostics
             </h1>
           </div>
-          <VehicleSelector onVehicleChange={handleVehicleChange} />
+          <VehicleSelector key={vehicleRefreshKey} onVehicleChange={handleVehicleChange} />
         </div>
 
         {/* Navigation Tabs */}
