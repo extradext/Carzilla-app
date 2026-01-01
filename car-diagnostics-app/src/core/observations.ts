@@ -121,6 +121,13 @@ export const OBSERVATION_IDS = {
   STEERING_WHEEL_SHAKE: "steering_wheel_shake",
   UNEVEN_TIRE_WEAR_VISIBLE: "uneven_tire_wear_visible",
   TIRE_PRESSURE_LIGHT_ON: "tire_pressure_light_on",
+  // Tire pressure asymmetry observations (common cause of vehicle pull)
+  TIRE_PRESSURE_UNEVEN: "tire_pressure_uneven",
+  TIRE_VISIBLY_LOW: "tire_visibly_low",
+  RECENT_CURB_IMPACT: "recent_curb_impact",
+  VALVE_STEM_DAMAGE_OR_LEAK: "valve_stem_damage_or_leak",
+  PULL_CHANGES_WITH_SPEED: "pull_changes_with_speed",
+  TIRE_SLOW_LEAK_HISTORY: "tire_slow_leak_history",
 
   // ---------------------------------------------------------------------------
   // SUSPENSION (DRAFT)
@@ -147,6 +154,10 @@ export const OBSERVATION_IDS = {
   BLOWER_NOT_WORKING: "blower_not_working",
   AIRFLOW_WEAK: "airflow_weak",
   MUSTY_SMELL_FROM_VENTS: "musty_smell_from_vents",
+  // Coolant-related observations (for no-heat diagnosis)
+  COOLANT_LOW: "coolant_low",
+  COOLANT_LEVEL_OK: "coolant_level_ok",
+  ENGINE_NEVER_WARMS: "engine_never_warms",
 
   // ---------------------------------------------------------------------------
   // SMELLS (GENERAL) (DRAFT)

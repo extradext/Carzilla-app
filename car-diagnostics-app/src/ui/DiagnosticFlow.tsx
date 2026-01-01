@@ -46,6 +46,10 @@ type Question = {
   id: string;
   text: string;
   subtext?: string;
+  /** Informational tip displayed below the question */
+  infoText?: string;
+  /** Phrasing review flag - false shows ⚠️ badge for dev review */
+  phrasingApproved?: boolean;
   options: AnswerOption[];
 };
 
@@ -54,12 +58,14 @@ const ALL_QUESTIONS: Record<string, Question> = {
   // ===== WON'T START QUESTIONS =====
   turn_key: {
     id: "turn_key",
-    text: "What happens when you turn the key?",
-    subtext: "Or press the start button",
+    text: "What sound do you hear from the engine bay when turning the key or pressing start?",
+    subtext: "Listen near the front of the vehicle",
+    infoText: "🔊 The starter motor is located in the engine bay. Different sounds indicate different issues.",
+    phrasingApproved: true,
     options: [
       {
         id: "rapid_clicking",
-        text: "Rapid clicking sound",
+        text: "Rapid clicking sound - like a machine gun",
         observations: [
           { id: OBSERVATION_IDS.RAPID_CLICKING_ON_START, value: "YES" },
         ],
@@ -67,7 +73,7 @@ const ALL_QUESTIONS: Record<string, Question> = {
       },
       {
         id: "single_click",
-        text: "One loud click, then nothing",
+        text: "One loud click from the engine area, then silence",
         observations: [
           { id: OBSERVATION_IDS.SINGLE_CLICK_NO_CRANK, value: "YES" },
         ],
@@ -75,7 +81,7 @@ const ALL_QUESTIONS: Record<string, Question> = {
       },
       {
         id: "nothing",
-        text: "Completely silent - no sound at all",
+        text: "Completely silent - no sound at all from engine bay",
         observations: [
           { id: OBSERVATION_IDS.NO_CLICK_NO_CRANK, value: "YES" },
         ],
@@ -83,7 +89,7 @@ const ALL_QUESTIONS: Record<string, Question> = {
       },
       {
         id: "slow_crank",
-        text: "Engine turns over slowly, sounds weak",
+        text: "Engine turns over slowly - sounds labored and weak",
         observations: [
           { id: OBSERVATION_IDS.ENGINE_CRANKS_SLOWLY, value: "YES" },
         ],
@@ -91,7 +97,7 @@ const ALL_QUESTIONS: Record<string, Question> = {
       },
       {
         id: "normal_crank",
-        text: "Cranks normally but won't fire up",
+        text: "Engine cranks at normal speed but won't start",
         observations: [
           { id: OBSERVATION_IDS.ENGINE_CRANKS_SLOWLY, value: "NO" },
           { id: OBSERVATION_IDS.LONG_CRANK_BEFORE_START, value: "YES" },
@@ -101,15 +107,17 @@ const ALL_QUESTIONS: Record<string, Question> = {
     ],
   },
 
-  // NEW: Key differentiating question - do lights work normally?
+  // Key differentiating question - dashboard lights at key-on
   lights_during_click: {
     id: "lights_during_click",
-    text: "When you turn the key to ON (before trying to start), are all the dashboard lights bright?",
-    subtext: "Check the dashboard warning lights and headlights",
+    text: "With the key turned to ON (not start), what do the dashboard warning lights look like?",
+    subtext: "Look at the instrument cluster on the dashboard",
+    infoText: "🔆 Dashboard lights should illuminate brightly at key-on. Dim lights suggest low battery voltage.",
+    phrasingApproved: true,
     options: [
       {
         id: "lights_bright",
-        text: "Yes - all lights come on bright and normal",
+        text: "All dashboard lights illuminate bright and clear",
         observations: [
           { id: OBSERVATION_IDS.HEADLIGHTS_DIM, value: "NO" },
         ],
@@ -117,7 +125,7 @@ const ALL_QUESTIONS: Record<string, Question> = {
       },
       {
         id: "lights_dim_weak",
-        text: "No - lights are dim or weak",
+        text: "Dashboard lights are dim, flickering, or barely visible",
         observations: [
           { id: OBSERVATION_IDS.HEADLIGHTS_DIM, value: "YES" },
         ],
@@ -125,7 +133,7 @@ const ALL_QUESTIONS: Record<string, Question> = {
       },
       {
         id: "no_lights_at_all",
-        text: "No lights come on at all",
+        text: "No dashboard lights illuminate at all - completely dark",
         observations: [
           { id: OBSERVATION_IDS.INTERMITTENT_NO_POWER, value: "YES" },
         ],
@@ -137,12 +145,14 @@ const ALL_QUESTIONS: Record<string, Question> = {
   // What happens to lights DURING the crank attempt?
   lights_when_cranking: {
     id: "lights_when_cranking",
-    text: "What happens to the dashboard/headlights when you try to start?",
-    subtext: "Watch the lights as you turn the key to START",
+    text: "What happens to the dashboard lights when you turn the key to START?",
+    subtext: "Watch the instrument cluster as you attempt to crank",
+    infoText: "🔋 If lights dim heavily or go out during cranking, the battery may not have enough power to run both lights and starter.",
+    phrasingApproved: true,
     options: [
       {
         id: "lights_dim_during",
-        text: "They dim significantly or flicker",
+        text: "Dashboard lights dim significantly or flicker during crank attempt",
         observations: [
           { id: OBSERVATION_IDS.LIGHTS_FLICKER, value: "YES" },
         ],
@@ -150,7 +160,7 @@ const ALL_QUESTIONS: Record<string, Question> = {
       },
       {
         id: "lights_go_out",
-        text: "They go completely out momentarily",
+        text: "Dashboard lights go completely dark momentarily during crank",
         observations: [
           { id: OBSERVATION_IDS.DASH_RESETS_WHEN_CRANKING, value: "YES" },
         ],
@@ -158,7 +168,7 @@ const ALL_QUESTIONS: Record<string, Question> = {
       },
       {
         id: "lights_stay_bright",
-        text: "They stay bright - barely change at all",
+        text: "Dashboard lights stay bright - barely change at all during crank",
         observations: [
           { id: OBSERVATION_IDS.HEADLIGHTS_DIM, value: "NO" },
           { id: OBSERVATION_IDS.DASH_RESETS_WHEN_CRANKING, value: "NO" },
@@ -171,23 +181,25 @@ const ALL_QUESTIONS: Record<string, Question> = {
 
   jump_start: {
     id: "jump_start",
-    text: "Have you tried jump starting it?",
+    text: "Has the vehicle been jump-started recently?",
+    infoText: "🔌 A successful jump start suggests the battery lacks charge. A failed jump may indicate a different issue.",
+    phrasingApproved: true,
     options: [
       {
         id: "jump_worked",
-        text: "Yes - it started with a jump",
+        text: "Yes - engine started successfully after jump-starting",
         observations: [{ id: OBSERVATION_IDS.JUMP_START_HELPS, value: "YES" }],
         next: "battery_age", // Confirm battery issue
       },
       {
         id: "jump_failed",
-        text: "Yes - still won't start even with a jump",
+        text: "Yes - engine still would not start even with jumper cables connected",
         observations: [{ id: OBSERVATION_IDS.JUMP_START_HELPS, value: "NO" }],
         next: "starter_tap_test", // Not battery, check starter
       },
       {
         id: "no_jump",
-        text: "Haven't tried yet",
+        text: "No - have not attempted a jump start",
         observations: [],
         next: "headlights_test", // Do another test to narrow down
       },
@@ -197,11 +209,14 @@ const ALL_QUESTIONS: Record<string, Question> = {
   // Direct headlight test
   headlights_test: {
     id: "headlights_test",
-    text: "Turn on the headlights. How bright are they?",
+    text: "With headlights turned ON, how bright do they appear?",
+    subtext: "Look at the headlight output, not dashboard indicators",
+    infoText: "💡 Headlight brightness reflects battery voltage. Bright lights suggest adequate charge.",
+    phrasingApproved: true,
     options: [
       {
         id: "headlights_bright",
-        text: "Bright and strong",
+        text: "Headlights are bright and strong",
         observations: [
           { id: OBSERVATION_IDS.HEADLIGHTS_DIM, value: "NO" },
         ],
@@ -209,7 +224,7 @@ const ALL_QUESTIONS: Record<string, Question> = {
       },
       {
         id: "headlights_dim",
-        text: "Dim or weak",
+        text: "Headlights are dim or weak",
         observations: [
           { id: OBSERVATION_IDS.HEADLIGHTS_DIM, value: "YES" },
         ],
@@ -217,7 +232,7 @@ const ALL_QUESTIONS: Record<string, Question> = {
       },
       {
         id: "headlights_off",
-        text: "Won't turn on at all",
+        text: "Headlights will not illuminate at all",
         observations: [
           { id: OBSERVATION_IDS.INTERMITTENT_NO_POWER, value: "YES" },
         ],
@@ -228,11 +243,13 @@ const ALL_QUESTIONS: Record<string, Question> = {
 
   dashboard_power: {
     id: "dashboard_power",
-    text: "Do any dashboard lights come on when you turn the key to ON?",
+    text: "With the key turned to ON position, does the dashboard instrument cluster illuminate?",
+    infoText: "🔌 If no dashboard lights appear at key-on, there may be a complete loss of electrical power.",
+    phrasingApproved: true,
     options: [
       {
         id: "no_lights",
-        text: "No - dashboard is completely dead",
+        text: "No - instrument cluster is completely dark",
         observations: [
           { id: OBSERVATION_IDS.INTERMITTENT_NO_POWER, value: "YES" },
         ],
@@ -240,13 +257,13 @@ const ALL_QUESTIONS: Record<string, Question> = {
       },
       {
         id: "lights_work",
-        text: "Yes - lights come on normally",
+        text: "Yes - dashboard lights illuminate normally",
         observations: [],
         next: "security_light",
       },
       {
         id: "lights_dim",
-        text: "Lights come on but very dim",
+        text: "Dashboard lights are visible but very dim",
         observations: [
           { id: OBSERVATION_IDS.HEADLIGHTS_DIM, value: "YES" },
         ],
@@ -257,11 +274,13 @@ const ALL_QUESTIONS: Record<string, Question> = {
 
   dashboard_lights: {
     id: "dashboard_lights",
-    text: "What do the dashboard lights look like when you try to start?",
+    text: "What happens to the instrument cluster lights during the crank attempt?",
+    subtext: "Watch the dashboard while turning key to START",
+    phrasingApproved: true,
     options: [
       {
         id: "lights_dim_crank",
-        text: "They dim or flicker when cranking",
+        text: "Dashboard lights dim or flicker during crank attempt",
         observations: [
           { id: OBSERVATION_IDS.HEADLIGHTS_DIM, value: "YES" },
           { id: OBSERVATION_IDS.LIGHTS_FLICKER, value: "YES" },
@@ -270,7 +289,7 @@ const ALL_QUESTIONS: Record<string, Question> = {
       },
       {
         id: "lights_go_out",
-        text: "They go completely out when I turn the key",
+        text: "Dashboard lights go completely dark when key is turned to START",
         observations: [
           { id: OBSERVATION_IDS.DASH_RESETS_WHEN_CRANKING, value: "YES" },
         ],
@@ -278,7 +297,7 @@ const ALL_QUESTIONS: Record<string, Question> = {
       },
       {
         id: "battery_warning",
-        text: "Battery warning light was already on before this",
+        text: "Battery warning light on dashboard was already illuminated before this",
         observations: [
           { id: OBSERVATION_IDS.BATTERY_LIGHT_ON, value: "YES" },
         ],
@@ -286,7 +305,7 @@ const ALL_QUESTIONS: Record<string, Question> = {
       },
       {
         id: "lights_normal",
-        text: "Lights stay bright, look normal",
+        text: "Dashboard lights stay bright during crank - no change",
         observations: [
           { id: OBSERVATION_IDS.HEADLIGHTS_DIM, value: "NO" },
         ],
@@ -297,12 +316,14 @@ const ALL_QUESTIONS: Record<string, Question> = {
 
   battery_terminals: {
     id: "battery_terminals",
-    text: "Can you check the battery terminals under the hood?",
-    subtext: "Look for white/green crusty buildup on the connections",
+    text: "Looking at the battery terminals under the hood, do you see any buildup or corrosion?",
+    subtext: "Check the cable connections on top of the battery",
+    infoText: "🔍 Corrosion appears as white, green, or blue crusty buildup on the battery posts or cable clamps.",
+    phrasingApproved: true,
     options: [
       {
         id: "corroded",
-        text: "Yes - I see corrosion buildup",
+        text: "Yes - visible corrosion buildup on terminals",
         observations: [{ id: OBSERVATION_IDS.TERMINALS_CORRODED, value: "YES" }],
         next: "battery_age",
       },
@@ -675,13 +696,15 @@ const ALL_QUESTIONS: Record<string, Question> = {
         id: "no_issues",
         text: "No - it always started fine until now",
         observations: [],
-        next: "retry_count",
+        next: null,
+        canResolve: true, // Sudden failure with good electrical = likely starter
       },
       {
         id: "old_issues",
         text: "Had issues before but they went away",
         observations: [],
-        next: "retry_count",
+        next: null,
+        canResolve: true, // Recurring issue = component failure pattern
       },
     ],
   },
@@ -1409,21 +1432,21 @@ const ALL_QUESTIONS: Record<string, Question> = {
       },
       {
         id: "pulsating",
-        text: "Pulsating - pedal vibrates when braking",
+        text: "Pedal vibrates or pulsates underfoot when braking",
         observations: [{ id: OBSERVATION_IDS.BRAKE_PEDAL_PULSATION, value: "YES" }],
         next: null,
         canResolve: true, // Warped rotors
       },
       {
         id: "hard",
-        text: "Hard - have to push really hard",
+        text: "Pedal requires excessive force to push down",
         observations: [],
         next: null,
         canResolve: true, // Booster issue
       },
       {
         id: "grabby",
-        text: "Grabby - brakes too hard even with light pressure",
+        text: "Pedal causes aggressive braking with minimal pressure",
         observations: [],
         next: null,
       },
@@ -1432,18 +1455,20 @@ const ALL_QUESTIONS: Record<string, Question> = {
 
   brake_fluid_check: {
     id: "brake_fluid_check",
-    text: "Can you check the brake fluid level?",
-    subtext: "Look at the reservoir under the hood",
+    text: "Looking at the brake fluid reservoir under the hood, what is the fluid level?",
+    subtext: "The reservoir is typically a small translucent container near the firewall with MIN/MAX markings",
+    infoText: "🔍 Brake fluid should be between MIN and MAX lines. Dark or murky fluid indicates contamination.",
+    phrasingApproved: true,
     options: [
       {
         id: "fluid_low",
-        text: "It's low",
+        text: "Fluid level is below MIN line or reservoir appears low",
         observations: [],
         next: "brake_leak_check",
       },
       {
         id: "fluid_ok",
-        text: "Fluid level looks fine",
+        text: "Fluid level is between MIN and MAX lines",
         observations: [],
         next: null,
         canResolve: true, // Air in lines
@@ -1453,18 +1478,20 @@ const ALL_QUESTIONS: Record<string, Question> = {
 
   brake_leak_check: {
     id: "brake_leak_check",
-    text: "Do you see any fluid leaking near the wheels?",
+    text: "Looking at the inner side of each wheel, do you see signs of fluid leaking?",
+    infoText: "⚠️ Brake fluid is clear to amber colored. Wet spots on the inner wheel or brake components indicate a leak.",
+    phrasingApproved: true,
     options: [
       {
         id: "yes_leak",
-        text: "Yes - I see wet spots near a wheel",
+        text: "Visible wet spots or drips near a wheel or brake caliper",
         observations: [],
         next: null,
         canResolve: true,
       },
       {
         id: "no_leak",
-        text: "No visible leaks",
+        text: "No visible leaks or wet areas near wheels",
         observations: [],
         next: null,
       },
@@ -1473,17 +1500,18 @@ const ALL_QUESTIONS: Record<string, Question> = {
 
   steering_feel: {
     id: "steering_feel",
-    text: "What's wrong with the steering?",
+    text: "While driving, what abnormal behavior does the steering exhibit?",
+    phrasingApproved: true,
     options: [
       {
         id: "heavy",
-        text: "Heavy - hard to turn",
+        text: "Steering wheel requires excessive effort to turn",
         observations: [{ id: OBSERVATION_IDS.STEERING_FEELS_HEAVY, value: "YES" }],
         next: "power_steering_check",
       },
       {
         id: "loose",
-        text: "Loose - lots of play before wheels respond",
+        text: "Steering wheel has excessive play before wheels respond",
         observations: [{ id: OBSERVATION_IDS.STEERING_WANDERS, value: "YES" }],
         next: null,
         canResolve: true,
@@ -1564,23 +1592,25 @@ const ALL_QUESTIONS: Record<string, Question> = {
 
   vibration_when: {
     id: "vibration_when",
-    text: "When do you feel the vibration?",
+    text: "At what vehicle speed do you feel the vibration?",
+    infoText: "🚗 Vibration at specific speeds often indicates wheel balance. Vibration only when braking suggests rotor issues.",
+    phrasingApproved: true,
     options: [
       {
         id: "highway_speed",
-        text: "At highway speeds (60+ mph)",
+        text: "Vibration occurs primarily at highway speeds (55-70 mph)",
         observations: [{ id: OBSERVATION_IDS.VIBRATION_AT_SPEED, value: "YES" }],
         next: "vibration_where",
       },
       {
         id: "any_speed",
-        text: "At all speeds",
+        text: "Vibration is present at all driving speeds",
         observations: [],
         next: "vibration_where",
       },
       {
         id: "only_braking",
-        text: "Only when braking",
+        text: "Vibration only occurs when pressing the brake pedal",
         observations: [{ id: OBSERVATION_IDS.BRAKE_PEDAL_PULSATION, value: "YES" }],
         next: null,
         canResolve: true,
@@ -1590,25 +1620,26 @@ const ALL_QUESTIONS: Record<string, Question> = {
 
   vibration_where: {
     id: "vibration_where",
-    text: "Where do you feel it most?",
+    text: "Where in the vehicle do you feel the vibration most strongly?",
+    phrasingApproved: true,
     options: [
       {
         id: "steering_wheel",
-        text: "In the steering wheel",
+        text: "Vibration felt primarily through the steering wheel",
         observations: [{ id: OBSERVATION_IDS.STEERING_WHEEL_SHAKE, value: "YES" }],
         next: null,
         canResolve: true, // Front balance/tires
       },
       {
         id: "seat",
-        text: "In my seat / whole car",
+        text: "Vibration felt through the seat or floor of the vehicle",
         observations: [],
         next: null,
         canResolve: true, // Rear balance/tires
       },
       {
         id: "both",
-        text: "Both steering wheel and seat",
+        text: "Vibration felt through both steering wheel and seat",
         observations: [{ id: OBSERVATION_IDS.STEERING_WHEEL_SHAKE, value: "YES" }],
         next: null,
       },
@@ -1617,20 +1648,199 @@ const ALL_QUESTIONS: Record<string, Question> = {
 
   pull_when: {
     id: "pull_when",
-    text: "When does it pull to the side?",
+    text: "When does the steering wheel pull to one side?",
+    infoText: "🔧 One wheel being hotter than others after driving may indicate dragging brakes.",
+    phrasingApproved: true,
     options: [
       {
         id: "always_pulling",
-        text: "All the time while driving",
+        text: "Steering pulls constantly while driving straight",
         observations: [{ id: OBSERVATION_IDS.PULLS_TO_ONE_SIDE, value: "YES" }],
-        next: "alignment_check",
+        next: "tire_pressure_check_first",
       },
       {
         id: "only_braking_pull",
-        text: "Only when I brake",
+        text: "Steering only pulls when applying brakes",
         observations: [{ id: OBSERVATION_IDS.PULLS_WHEN_BRAKING, value: "YES" }],
         next: null,
         canResolve: true, // Stuck caliper or uneven brakes
+      },
+    ],
+  },
+
+  // Tire pressure check - first pass discriminator for vehicle pull
+  // Rationale: Tire pressure asymmetry often mimics brake drag or steering faults
+  // and should be ruled out early as it's the most common and easiest fix.
+  tire_pressure_check_first: {
+    id: "tire_pressure_check_first",
+    text: "Using a tire pressure gauge, what are the pressure readings for all four tires?",
+    subtext: "Check when tires are cold (before driving). Compare to the door jamb sticker specification.",
+    infoText: "💡 Vehicles typically pull toward the tire with LOWER pressure. Low tire pressure can cause drift even without braking.",
+    phrasingApproved: true,
+    options: [
+      {
+        id: "pressures_uneven",
+        text: "One or more tires reads significantly lower than the others",
+        observations: [{ id: OBSERVATION_IDS.TIRE_PRESSURE_UNEVEN, value: "YES" }],
+        next: "tire_leak_cause",
+      },
+      {
+        id: "pressures_ok",
+        text: "All four tires show equal or near-equal pressure readings",
+        observations: [{ id: OBSERVATION_IDS.TIRE_PRESSURE_UNEVEN, value: "NO" }],
+        next: "pull_speed_behavior",
+      },
+      {
+        id: "havent_checked",
+        text: "Cannot check pressure - no gauge available",
+        observations: [],
+        next: "visible_low_tire",
+      },
+    ],
+  },
+
+  // Visual check for obviously low tire
+  visible_low_tire: {
+    id: "visible_low_tire",
+    text: "Looking at all four tires while parked on level ground, does any tire appear visibly lower?",
+    infoText: "🔍 A significantly low tire will show more sidewall bulge at the bottom and less air gap above the tire.",
+    phrasingApproved: true,
+    phrasingApproved: true,
+    options: [
+      {
+        id: "yes_visibly_low",
+        text: "One tire appears noticeably flatter or more compressed than others",
+        observations: [{ id: OBSERVATION_IDS.TIRE_VISIBLY_LOW, value: "YES" }],
+        next: "tire_leak_cause",
+      },
+      {
+        id: "all_look_same",
+        text: "All tires appear similar in height and shape",
+        observations: [{ id: OBSERVATION_IDS.TIRE_VISIBLY_LOW, value: "NO" }],
+        next: "pull_speed_behavior",
+      },
+      {
+        id: "tpms_light",
+        text: "Tire pressure warning light is illuminated on dashboard",
+        observations: [{ id: OBSERVATION_IDS.TIRE_PRESSURE_LIGHT_ON, value: "YES" }],
+        next: "tire_leak_cause",
+      },
+    ],
+  },
+
+  // Investigate likely cause of tire pressure loss
+  tire_leak_cause: {
+    id: "tire_leak_cause",
+    text: "Thinking back, what may have caused the tire pressure loss?",
+    infoText: "🔧 Common causes: curb strike, slow valve stem leak, seasonal temperature drop, moisture inside tire, or aging tire.",
+    phrasingApproved: true,
+    options: [
+      {
+        id: "curb_hit",
+        text: "Recently drove over a curb, pothole, or debris",
+        observations: [{ id: OBSERVATION_IDS.RECENT_CURB_IMPACT, value: "YES" }],
+        next: null,
+        canResolve: true, // Tire pressure / possible damage
+      },
+      {
+        id: "slow_leak",
+        text: "This same tire has needed air multiple times over weeks/months",
+        observations: [{ id: OBSERVATION_IDS.TIRE_SLOW_LEAK_HISTORY, value: "YES" }],
+        next: "slow_leak_source",
+      },
+      {
+        id: "just_low",
+        text: "Unknown - just noticed it was low",
+        observations: [],
+        next: null,
+        canResolve: true, // Check and fill tires
+      },
+    ],
+  },
+
+  // Diagnose slow leak source
+  slow_leak_source: {
+    id: "slow_leak_source",
+    text: "Inspecting the tire and valve stem, do you see any damage or hear air escaping?",
+    infoText: "🔍 Apply soapy water to the valve and tire surface - bubbles indicate the leak location.",
+    phrasingApproved: true,
+    options: [
+      {
+        id: "valve_damage",
+        text: "Valve stem appears damaged, cracked, or hissing sound at valve",
+        observations: [{ id: OBSERVATION_IDS.VALVE_STEM_DAMAGE_OR_LEAK, value: "YES" }],
+        next: null,
+        canResolve: true, // Valve stem replacement
+      },
+      {
+        id: "nail_screw",
+        text: "Visible nail, screw, or puncture object in tire tread",
+        observations: [],
+        next: null,
+        canResolve: true, // Tire repair
+      },
+      {
+        id: "bead_area",
+        text: "Bubbles appear at the rim edge where tire meets wheel",
+        observations: [],
+        next: null,
+        canResolve: true, // Bead reseat
+      },
+      {
+        id: "unknown_source",
+        text: "Cannot locate the leak source",
+        observations: [{ id: OBSERVATION_IDS.TIRE_SLOW_LEAK_HISTORY, value: "YES" }],
+        next: null,
+        canResolve: true, // Need leak detection
+      },
+    ],
+  },
+
+  // Check if pull behavior changes with speed (helps discriminate alignment vs pressure)
+  pull_speed_behavior: {
+    id: "pull_speed_behavior",
+    text: "While driving, does the steering pull change at different speeds?",
+    infoText: "💨 Pull that increases with speed often indicates alignment. Constant pull may indicate tire pressure or brake issues.",
+    phrasingApproved: true,
+    options: [
+      {
+        id: "worse_highway",
+        text: "Pull becomes stronger or more noticeable at highway speeds (50+ mph)",
+        observations: [{ id: OBSERVATION_IDS.PULL_CHANGES_WITH_SPEED, value: "YES" }],
+        next: "alignment_check",
+      },
+      {
+        id: "same_all_speeds",
+        text: "Pull feels consistent regardless of vehicle speed",
+        observations: [{ id: OBSERVATION_IDS.PULL_CHANGES_WITH_SPEED, value: "NO" }],
+        next: "alignment_check",
+      },
+      {
+        id: "only_slow",
+        text: "Pull only noticeable at low speeds or when parking",
+        observations: [],
+        next: "torque_steer_check",
+      },
+    ],
+  },
+
+  // Torque steer check for front-wheel drive
+  torque_steer_check: {
+    id: "torque_steer_check",
+    text: "Does it pull mainly when accelerating from a stop?",
+    options: [
+      {
+        id: "yes_accelerating",
+        text: "Yes - pulls when I accelerate hard",
+        observations: [],
+        next: null,
+        canResolve: true, // Likely torque steer (normal for FWD)
+      },
+      {
+        id: "all_the_time",
+        text: "No - pulls even when coasting",
+        observations: [],
+        next: "alignment_check",
       },
     ],
   },
@@ -1679,7 +1889,7 @@ const ALL_QUESTIONS: Record<string, Question> = {
       },
       {
         id: "no_fan",
-        text: "Fan doesn't blow at all",
+        text: "Blower fan does not operate - no air movement from any vent",
         observations: [{ id: OBSERVATION_IDS.BLOWER_NOT_WORKING, value: "YES" }],
         next: "fan_details",
       },
@@ -1688,24 +1898,26 @@ const ALL_QUESTIONS: Record<string, Question> = {
 
   heat_temp_gauge: {
     id: "heat_temp_gauge",
-    text: "What does the engine temperature gauge show?",
+    text: "🌡️ What does the engine temperature gauge on the dashboard show?",
+    subtext: "Look at the temperature gauge in the instrument cluster",
+    infoText: "🔧 The engine temperature gauge reflects coolant temperature, not cabin air. It should reach the middle range after 10-15 minutes of driving.",
+    phrasingApproved: true,
     options: [
       {
         id: "never_warms",
-        text: "Engine never warms up - stays cold",
-        observations: [],
-        next: null,
-        canResolve: true, // Thermostat stuck open
+        text: "Gauge needle stays in the cold zone - never rises even after driving",
+        observations: [{ id: OBSERVATION_IDS.ENGINE_NEVER_WARMS, value: "YES" }],
+        next: "coolant_check_first", // Check coolant before concluding thermostat
       },
       {
         id: "warms_normal",
-        text: "Engine warms up normally",
+        text: "Gauge needle rises to normal operating range (middle) after driving",
         observations: [],
-        next: "coolant_check",
+        next: "coolant_check_first",
       },
       {
         id: "overheats",
-        text: "Engine is overheating",
+        text: "Gauge needle goes into the red/hot zone - warning light may be on",
         observations: [{ id: OBSERVATION_IDS.TEMP_GAUGE_HIGH, value: "YES" }],
         next: null,
         canResolve: true,
@@ -1713,6 +1925,157 @@ const ALL_QUESTIONS: Record<string, Question> = {
     ],
   },
 
+  // Check coolant first - low coolant is simpler fix than thermostat
+  // Both can cause no heat, but low coolant can be ruled out by adding coolant
+  coolant_check_first: {
+    id: "coolant_check_first",
+    text: "Looking at the coolant overflow reservoir under the hood, what is the fluid level?",
+    subtext: "The reservoir is a translucent plastic tank near the radiator with MIN/MAX markings",
+    infoText: "💡 Low coolant is a common cause of no heat and should be ruled out first. Check when engine is cold - NEVER open a hot radiator cap.",
+    phrasingApproved: true,
+    options: [
+      {
+        id: "coolant_low",
+        text: "Fluid level is below the MIN line or reservoir appears empty",
+        observations: [{ id: OBSERVATION_IDS.COOLANT_LOW, value: "YES" }],
+        next: "coolant_leak_check",
+      },
+      {
+        id: "coolant_ok",
+        text: "Fluid level is between MIN and MAX lines",
+        observations: [{ id: OBSERVATION_IDS.COOLANT_LEVEL_OK, value: "YES" }],
+        next: "heat_diagnosis_continued",
+      },
+      {
+        id: "havent_checked_coolant",
+        text: "I cannot locate or see the reservoir",
+        observations: [],
+        next: "coolant_visual_check",
+      },
+    ],
+  },
+
+  // Visual check for low coolant
+  coolant_visual_check: {
+    id: "coolant_visual_check",
+    text: "The coolant overflow reservoir is typically a translucent plastic tank near the radiator. Can you locate it?",
+    subtext: "Usually has MIN/MAX lines and contains green, orange, or pink fluid",
+    phrasingApproved: true,
+    options: [
+      {
+        id: "reservoir_empty",
+        text: "Found it - reservoir is empty or fluid is below MIN line",
+        observations: [{ id: OBSERVATION_IDS.COOLANT_LOW, value: "YES" }],
+        next: "coolant_leak_check",
+      },
+      {
+        id: "reservoir_normal",
+        text: "Found it - fluid level is between MIN and MAX lines",
+        observations: [{ id: OBSERVATION_IDS.COOLANT_LEVEL_OK, value: "YES" }],
+        next: "heat_diagnosis_continued",
+      },
+      {
+        id: "cant_find",
+        text: "Cannot locate the reservoir or see the fluid level",
+        observations: [],
+        next: "heat_diagnosis_continued",
+      },
+    ],
+  },
+
+  // If coolant is low, check for leak before just adding coolant
+  coolant_leak_check: {
+    id: "coolant_leak_check",
+    text: "Looking under the vehicle and around engine hoses, do you see signs of coolant leaking?",
+    infoText: "🔍 Coolant appears as green, orange, or pink puddles. White crusty residue around hoses also indicates past leaks.",
+    phrasingApproved: true,
+    options: [
+      {
+        id: "visible_leak",
+        text: "Yes - visible puddle or wet spots under vehicle",
+        observations: [],
+        next: null,
+        canResolve: true, // Coolant leak needs repair
+      },
+      {
+        id: "no_visible_leak",
+        text: "No visible leaks or puddles",
+        observations: [],
+        next: null,
+        canResolve: true, // Top off coolant and monitor
+      },
+      {
+        id: "sweet_smell_cabin",
+        text: "No external leak but sweet smell noticeable inside cabin",
+        observations: [{ id: OBSERVATION_IDS.SWEET_SMELL, value: "YES" }],
+        next: null,
+        canResolve: true, // Heater core leak
+      },
+    ],
+  },
+
+  // Continue heat diagnosis after coolant ruled out
+  heat_diagnosis_continued: {
+    id: "heat_diagnosis_continued",
+    text: "With coolant level confirmed OK, observe the temperature gauge after 10-15 minutes of driving:",
+    phrasingApproved: true,
+    options: [
+      {
+        id: "stays_cold",
+        text: "Temperature gauge needle stays in cold zone - never reaches middle",
+        observations: [{ id: OBSERVATION_IDS.ENGINE_NEVER_WARMS, value: "YES" }],
+        next: null,
+        canResolve: true, // Thermostat stuck open
+      },
+      {
+        id: "warms_up",
+        text: "Temperature gauge reaches normal range but still no heat from vents",
+        observations: [],
+        next: "heater_hose_check",
+      },
+    ],
+  },
+
+  // Check heater hoses for diagnosis
+  heater_hose_check: {
+    id: "heater_hose_check",
+    text: "With engine warmed up, locate the two heater hoses going through the firewall. What is their temperature?",
+    subtext: "These are rubber hoses near the back of the engine bay going into the cabin",
+    infoText: "⚠️ Use caution - hoses may be hot. Both hoses should feel warm/hot when heater is operating.",
+    phrasingApproved: true,
+    options: [
+      {
+        id: "both_hot",
+        text: "Both heater hoses feel hot to the touch",
+        observations: [],
+        next: null,
+        canResolve: true, // Blend door actuator problem
+      },
+      {
+        id: "one_hot_one_cold",
+        text: "One hose is hot, the other is cold or cool",
+        observations: [],
+        next: null,
+        canResolve: true, // Heater core clogged
+      },
+      {
+        id: "both_cold",
+        text: "Both hoses are cold",
+        observations: [],
+        next: null,
+        canResolve: true, // Coolant not circulating through heater
+      },
+      {
+        id: "cant_check_hoses",
+        text: "I can't safely check the hoses",
+        observations: [],
+        next: null,
+        canResolve: true,
+      },
+    ],
+  },
+
+  // Legacy coolant check (kept for compatibility)
   coolant_check: {
     id: "coolant_check",
     text: "Can you check the coolant level?",
@@ -1721,14 +2084,14 @@ const ALL_QUESTIONS: Record<string, Question> = {
       {
         id: "coolant_low",
         text: "It's low",
-        observations: [],
+        observations: [{ id: OBSERVATION_IDS.COOLANT_LOW, value: "YES" }],
         next: null,
         canResolve: true,
       },
       {
         id: "coolant_ok",
         text: "Level looks normal",
-        observations: [],
+        observations: [{ id: OBSERVATION_IDS.COOLANT_LEVEL_OK, value: "YES" }],
         next: null,
         canResolve: true, // Blend door or heater core
       },
@@ -2152,16 +2515,32 @@ export function DiagnosticFlow({ vehicleId, onResult, excludedHypotheses = [], o
           </div>
         </div>
 
-        <h2 style={{ margin: "0 0 8px", fontSize: 22 }} data-testid="question-text">
-          {currentQuestion.text}
-        </h2>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+          <h2 style={{ margin: 0, fontSize: 22 }} data-testid="question-text">
+            {currentQuestion.text}
+          </h2>
+          {/* Phrasing review badge - DEV ONLY */}
+          {currentQuestion.phrasingApproved === false && (
+            <span
+              title="Phrasing under review — verify instrument/source clarity"
+              style={{
+                cursor: "help",
+                fontSize: 14,
+                opacity: 0.7,
+              }}
+            >
+              ⚠️
+            </span>
+          )}
+        </div>
         {currentQuestion.subtext && (
           <p style={{ margin: "0 0 20px", opacity: 0.7, fontSize: 14 }}>
             {currentQuestion.subtext}
           </p>
         )}
 
-        <div style={{ display: "grid", gap: 10 }} data-testid="answer-options">
+        {/* Answer options - FIRST, before any supporting info */}
+        <div style={{ display: "grid", gap: 10, marginBottom: currentQuestion.infoText ? 16 : 0 }} data-testid="answer-options">
           {currentQuestion.options.map((option) => (
             <button
               key={option.id}
@@ -2179,6 +2558,29 @@ export function DiagnosticFlow({ vehicleId, onResult, excludedHypotheses = [], o
             </button>
           ))}
         </div>
+
+        {/* Contextual tip - AFTER answers, clearly non-interactive */}
+        {currentQuestion.infoText && (
+          <div
+            style={{
+              marginTop: 8,
+              padding: "10px 14px",
+              background: "transparent",
+              borderRadius: 6,
+              border: "1px solid rgba(180, 200, 140, 0.4)",
+              borderLeft: "3px solid rgba(180, 200, 140, 0.7)",
+              fontSize: 13,
+              lineHeight: 1.45,
+              color: "rgba(255, 255, 255, 0.7)",
+              cursor: "default",
+              userSelect: "text",
+            }}
+            data-testid="question-info"
+          >
+            <span style={{ marginRight: 6, opacity: 0.8 }}>ℹ️</span>
+            <span style={{ fontStyle: "italic" }}>{currentQuestion.infoText}</span>
+          </div>
+        )}
       </section>
     );
   }

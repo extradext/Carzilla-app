@@ -11,6 +11,8 @@ export type DiagnosticResult = {
   timestamp: string; // ISO datetime
   entryAnchor: EntryAnchor;
   topHypothesis: string;
+  /** Specific component when diagnosis can be narrowed beyond system level */
+  specificComponent?: string;
   confidence: number;
   supportingObservations: string[];
   safetyNotes?: string[];

@@ -200,6 +200,31 @@ export const observationFamilies: Partial<Record<ObservationId, ObservationFamil
   [OBSERVATION_IDS.TIRE_PRESSURE_LIGHT_ON]: {
     primary: HYPOTHESIS_FAMILIES.TIRES_WHEELS,
   },
+  // Tire pressure asymmetry observations
+  // Rationale: Tire pressure asymmetry often mimics brake drag or steering faults
+  // and should be ruled out early as it's the most common and easiest fix.
+  [OBSERVATION_IDS.TIRE_PRESSURE_UNEVEN]: {
+    primary: HYPOTHESIS_FAMILIES.TIRES_WHEELS,
+    secondary: [HYPOTHESIS_FAMILIES.BRAKES_HEAT_DRAG, HYPOTHESIS_FAMILIES.STEERING_HYDRAULIC],
+  },
+  [OBSERVATION_IDS.TIRE_VISIBLY_LOW]: {
+    primary: HYPOTHESIS_FAMILIES.TIRES_WHEELS,
+  },
+  [OBSERVATION_IDS.RECENT_CURB_IMPACT]: {
+    primary: HYPOTHESIS_FAMILIES.TIRES_WHEELS,
+    secondary: [HYPOTHESIS_FAMILIES.SUSPENSION],
+  },
+  [OBSERVATION_IDS.VALVE_STEM_DAMAGE_OR_LEAK]: {
+    primary: HYPOTHESIS_FAMILIES.TIRES_WHEELS,
+  },
+  [OBSERVATION_IDS.PULL_CHANGES_WITH_SPEED]: {
+    // Pull that changes with speed suggests tire/alignment issue rather than brakes
+    primary: HYPOTHESIS_FAMILIES.TIRES_WHEELS,
+    secondary: [HYPOTHESIS_FAMILIES.STEERING_HYDRAULIC, HYPOTHESIS_FAMILIES.STEERING_EPS],
+  },
+  [OBSERVATION_IDS.TIRE_SLOW_LEAK_HISTORY]: {
+    primary: HYPOTHESIS_FAMILIES.TIRES_WHEELS,
+  },
 
   // ---------------------------------------------------------------------------
   // SUSPENSION
@@ -229,8 +254,10 @@ export const observationFamilies: Partial<Record<ObservationId, ObservationFamil
     secondary: [HYPOTHESIS_FAMILIES.TIRES_WHEELS, HYPOTHESIS_FAMILIES.SUSPENSION],
   },
   [OBSERVATION_IDS.PULLS_TO_ONE_SIDE]: {
-    primary: HYPOTHESIS_FAMILIES.STEERING_HYDRAULIC,
-    secondary: [HYPOTHESIS_FAMILIES.TIRES_WHEELS],
+    // Tire pressure asymmetry is the most common cause of vehicle pull
+    // Should check tires first before escalating to brake or steering issues
+    primary: HYPOTHESIS_FAMILIES.TIRES_WHEELS,
+    secondary: [HYPOTHESIS_FAMILIES.STEERING_HYDRAULIC, HYPOTHESIS_FAMILIES.BRAKES_HEAT_DRAG],
   },
   [OBSERVATION_IDS.WHINE_WHEN_TURNING]: {
     primary: HYPOTHESIS_FAMILIES.STEERING_HYDRAULIC,
@@ -256,6 +283,16 @@ export const observationFamilies: Partial<Record<ObservationId, ObservationFamil
     primary: HYPOTHESIS_FAMILIES.HVAC,
   },
   [OBSERVATION_IDS.MUSTY_SMELL_FROM_VENTS]: {
+    primary: HYPOTHESIS_FAMILIES.HVAC,
+  },
+  // Coolant-related observations
+  [OBSERVATION_IDS.COOLANT_LOW]: {
+    primary: HYPOTHESIS_FAMILIES.HVAC,
+  },
+  [OBSERVATION_IDS.COOLANT_LEVEL_OK]: {
+    primary: HYPOTHESIS_FAMILIES.HVAC,
+  },
+  [OBSERVATION_IDS.ENGINE_NEVER_WARMS]: {
     primary: HYPOTHESIS_FAMILIES.HVAC,
   },
 
