@@ -3,66 +3,159 @@
  * PRESENTATION ONLY
  */
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { getPreferences, savePreferences } from "../storage/localStore";
+import type { UserPreferences } from "../models/userPreferences";
 
 export function Settings() {
-  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
-  const [oilReminder, setOilReminder] = useState(false);
-  const [seasonalReminders, setSeasonalReminders] = useState(false);
+  const [prefs, setPrefs] = useState<UserPreferences>({
+    notificationsEnabled: false,
+    oilReminder: false,
+    seasonalReminders: false,
+  });
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    const loaded = getPreferences();
+    setPrefs(loaded);
+  }, []);
+
+  const handleSave = () => {
+    savePreferences(prefs);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handleChange = (key: keyof UserPreferences, value: boolean) => {
+    setPrefs((prev) => ({ ...prev, [key]: value }));
+    setSaved(false);
+  };
 
   return (
     <section className="card" data-testid="settings-panel">
       <h2 style={{ marginTop: 0 }} data-testid="settings-title">
-        Settings (Placeholder)
+        Settings
       </h2>
 
-      <div style={{ display: "grid", gap: 10 }} data-testid="settings-form">
-        <label data-testid="settings-notifications-label">
-          <input
-            type="checkbox"
-            checked={notificationsEnabled}
-            onChange={(e) => setNotificationsEnabled(e.target.checked)}
-            data-testid="settings-notifications-checkbox"
-          />{" "}
-          Notifications enabled
-        </label>
-
-        <label data-testid="settings-oil-label">
-          <input
-            type="checkbox"
-            checked={oilReminder}
-            onChange={(e) => setOilReminder(e.target.checked)}
-            data-testid="settings-oil-checkbox"
-          />{" "}
-          Oil reminder
-        </label>
-
-        <label data-testid="settings-seasonal-label">
-          <input
-            type="checkbox"
-            checked={seasonalReminders}
-            onChange={(e) => setSeasonalReminders(e.target.checked)}
-            data-testid="settings-seasonal-checkbox"
-          />{" "}
-          Seasonal reminders
-        </label>
-
-        <button
-          className="button"
-          data-testid="settings-save-button"
-          onClick={() => {
-            // TODO: Persist to /storage when implemented.
-            // eslint-disable-next-line no-console
-            console.log("TODO: save prefs", { notificationsEnabled, oilReminder, seasonalReminders });
-          }}
+      <div style={{ display: "grid", gap: 16 }} data-testid="settings-form">
+        <label
+          style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }}
+          data-testid="settings-notifications-label"
         >
-          Save (TODO)
-        </button>
+          <input
+            type="checkbox"
+            checked={prefs.notificationsEnabled}
+            onChange={(e) => handleChange("notificationsEnabled", e.target.checked)}
+            data-testid="settings-notifications-checkbox"
+            style={{ width: 20, height: 20 }}
+          />
+          <div>
+            <strong>Notifications</strong>
+            <p style={{ margin: "4px 0 0", opacity: 0.7, fontSize: 14 }}>
+              Enable maintenance reminders and alerts
+            </p>
+          </div>
+        </label>
+
+        <label
+          style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }}
+          data-testid="settings-oil-label"
+        >
+          <input
+            type="checkbox"
+            checked={prefs.oilReminder}
+            onChange={(e) => handleChange("oilReminder", e.target.checked)}
+            data-testid="settings-oil-checkbox"
+            style={{ width: 20, height: 20 }}
+          />
+          <div>
+            <strong>Oil Change Reminder</strong>
+            <p style={{ margin: "4px 0 0", opacity: 0.7, fontSize: 14 }}>
+              Remind me when oil change is due based on mileage
+            </p>
+          </div>
+        </label>
+
+        <label
+          style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }}
+          data-testid="settings-seasonal-label"
+        >
+          <input
+            type="checkbox"
+            checked={prefs.seasonalReminders}
+            onChange={(e) => handleChange("seasonalReminders", e.target.checked)}
+            data-testid="settings-seasonal-checkbox"
+            style={{ width: 20, height: 20 }}
+          />
+          <div>
+            <strong>Seasonal Reminders</strong>
+            <p style={{ margin: "4px 0 0", opacity: 0.7, fontSize: 14 }}>
+              Remind me about seasonal maintenance (winter tires, coolant checks, etc.)
+            </p>
+          </div>
+        </label>
+
+        <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 16, marginTop: 8 }}>
+          <button
+            className="button"
+            data-testid="settings-save-button"
+            onClick={handleSave}
+            style={{ padding: "12px 24px" }}
+          >
+            {saved ? "✓ Saved" : "Save Settings"}
+          </button>
+        </div>
       </div>
 
-      <p style={{ opacity: 0.85 }} data-testid="settings-todo">
-        TODO: Backed by <code>/src/models/userPreferences.ts</code> + <code>/src/storage</code>.
-      </p>
+      <div
+        style={{
+          marginTop: 24,
+          padding: 16,
+          background: "rgba(255,255,255,0.04)",
+          borderRadius: 8,
+        }}
+      >
+        <h3 style={{ margin: "0 0 12px" }}>About</h3>
+        <p style={{ margin: 0, opacity: 0.8 }}>
+          Car Diagnostics App v1.0
+          <br />
+          Local-first architecture with sync-ready design.
+          <br />
+          All data is stored locally on your device.
+        </p>
+      </div>
+
+      <div
+        style={{
+          marginTop: 16,
+          padding: 16,
+          background: "rgba(255,100,100,0.1)",
+          borderRadius: 8,
+        }}
+      >
+        <h3 style={{ margin: "0 0 12px", color: "#ff6b6b" }}>Data Management</h3>
+        <p style={{ margin: "0 0 12px", opacity: 0.8 }}>
+          Clear all local data. This will remove all vehicles, notes, maintenance records, and saved
+          diagnostics.
+        </p>
+        <button
+          className="button"
+          onClick={() => {
+            if (
+              confirm(
+                "Are you sure you want to clear all data? This action cannot be undone."
+              )
+            ) {
+              localStorage.clear();
+              window.location.reload();
+            }
+          }}
+          style={{ background: "rgba(255,100,100,0.2)" }}
+          data-testid="clear-data-button"
+        >
+          Clear All Data
+        </button>
+      </div>
     </section>
   );
 }
