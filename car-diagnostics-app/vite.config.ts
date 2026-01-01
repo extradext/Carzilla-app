@@ -5,6 +5,6 @@ export default defineConfig({
   plugins: [react()],
   server: {
     // Required for Emergent preview domains.
-    allowedHosts: ["contract-builder-9.preview.emergentagent.com"],
+    allowedHosts: true,
   },
 });
