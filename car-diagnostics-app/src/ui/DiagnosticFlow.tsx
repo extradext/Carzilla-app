@@ -493,7 +493,8 @@ const ALL_QUESTIONS: Record<string, Question> = {
         text: "Yes - sometimes it starts fine, sometimes it doesn't",
         observations: [],
         next: null,
-        canResolve: true, // Intermittent = likely starter
+        canResolve: true,
+        definitiveHypothesis: "starter", // Intermittent starting = classic starter failure
       },
       {
         id: "first_failure",
