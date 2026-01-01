@@ -1905,6 +1905,9 @@ export function Results({
         />
       </div>
 
+      {/* Easy Checks Before Replacing Parts - Informational Only */}
+      <EasyChecksSection />
+
       {/* Action Buttons */}
       <div className="row" style={{ marginBottom: 16 }} data-testid="result-actions">
         {vehicleId && !saved && (
