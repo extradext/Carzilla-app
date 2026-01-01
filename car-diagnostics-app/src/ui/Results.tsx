@@ -1245,6 +1245,128 @@ function VerificationGuideSection({ componentId }: { componentId?: string }) {
   );
 }
 
+/**
+ * EasyChecksSection - Collapsible "Easy checks before replacing parts" section
+ * 
+ * PURPOSE:
+ * - Cheap, fast, low-risk checks often overlooked
+ * - Supportive information only (never primary causes)
+ * - Honorable mentions, not diagnoses
+ * 
+ * RULES:
+ * - Does NOT affect diagnosis
+ * - Does NOT influence scoring
+ * - Always available (not hypothesis-dependent)
+ * - Starts collapsed
+ * - Informational only
+ */
+function EasyChecksSection() {
+  const [isOpen, setIsOpen] = useState(false);
+  const easyChecks = getEasyChecksArray();
+  
+  return (
+    <div
+      style={{
+        marginBottom: 16,
+        padding: 16,
+        background: "rgba(255,255,255,0.03)",
+        borderRadius: 8,
+        border: "1px solid rgba(255,255,255,0.08)",
+      }}
+      data-testid="easy-checks-section"
+    >
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        style={{
+          background: "transparent",
+          border: "none",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          width: "100%",
+          textAlign: "left",
+          padding: 0,
+          color: "inherit",
+        }}
+        data-testid="easy-checks-toggle"
+      >
+        <span style={{ fontSize: 14, opacity: 0.6 }}>{isOpen ? "▼" : "▶"}</span>
+        <span style={{ fontSize: 15, opacity: 0.7 }}>🔍</span>
+        <span style={{ fontSize: 14, opacity: 0.7 }}>
+          Easy checks before replacing parts
+        </span>
+      </button>
+      
+      {isOpen && (
+        <div style={{ marginTop: 16 }} data-testid="easy-checks-content">
+          <p style={{ 
+            margin: "0 0 16px", 
+            fontSize: 13, 
+            opacity: 0.6, 
+            lineHeight: 1.5,
+            fontStyle: "italic",
+          }}>
+            Quick, inexpensive checks that often improve symptoms — even when they aren't the root cause.
+          </p>
+          
+          {easyChecks.map((category) => (
+            <details
+              key={category.id}
+              style={{
+                marginBottom: 12,
+                background: "rgba(255,255,255,0.02)",
+                borderRadius: 6,
+                padding: "10px 12px",
+              }}
+            >
+              <summary
+                style={{
+                  cursor: "pointer",
+                  fontWeight: 500,
+                  fontSize: 14,
+                  opacity: 0.85,
+                  listStyle: "none",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                }}
+              >
+                <span style={{ fontSize: 12, opacity: 0.5 }}>▸</span>
+                {category.title}
+              </summary>
+              <div style={{ marginTop: 10, paddingLeft: 4 }}>
+                <ul style={{ 
+                  margin: 0, 
+                  paddingLeft: 18, 
+                  opacity: 0.8,
+                  fontSize: 13,
+                  lineHeight: 1.6,
+                }}>
+                  {category.items.map((item, i) => (
+                    <li key={i} style={{ marginBottom: 6 }}>{item}</li>
+                  ))}
+                </ul>
+                {category.note && (
+                  <p style={{ 
+                    margin: "10px 0 0", 
+                    fontSize: 12, 
+                    opacity: 0.6,
+                    fontStyle: "italic",
+                    lineHeight: 1.4,
+                  }}>
+                    💡 {category.note}
+                  </p>
+                )}
+              </div>
+            </details>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 type ResultsProps = {
   result: DiagnosticResult;
   vehicleId: string | null;
