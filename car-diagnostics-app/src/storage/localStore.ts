@@ -223,11 +223,16 @@ function deleteSavedDiagnosticsForVehicle(vehicleId: string): void {
 // User Preferences
 export function getPreferences(): UserPreferences {
   const data = localStorage.getItem(STORAGE_KEYS.PREFERENCES);
-  return data ? JSON.parse(data) : { notificationsEnabled: false, oilReminder: false, seasonalReminders: false };
+  return data ? JSON.parse(data) : { notificationsEnabled: false, oilReminder: false, seasonalReminders: false, proEnabled: false };
 }
 
 export function savePreferences(prefs: UserPreferences): void {
   localStorage.setItem(STORAGE_KEYS.PREFERENCES, JSON.stringify(prefs));
+}
+
+export function isProEnabled(): boolean {
+  const prefs = getPreferences();
+  return prefs.proEnabled === true;
 }
 
 // Safety Acknowledgment
