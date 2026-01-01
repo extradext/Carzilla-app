@@ -34,6 +34,8 @@ export type DiagnosticEngineInput = {
   timestamp?: string;
   /** Optional deterministic id (UUID). */
   resultId?: string;
+  /** Pro feature: hypotheses to exclude from consideration */
+  excludedHypotheses?: string[];
 };
 
 export type DiagnosticEngineOutput = {
