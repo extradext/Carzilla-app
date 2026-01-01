@@ -99,8 +99,10 @@ const ALL_QUESTIONS: Record<string, Question> = {
         id: "normal_crank",
         text: "Engine cranks at normal speed but won't start",
         observations: [
+          // Normal crank speed rules out battery weakness
           { id: OBSERVATION_IDS.ENGINE_CRANKS_SLOWLY, value: "NO" },
-          { id: OBSERVATION_IDS.LONG_CRANK_BEFORE_START, value: "YES" },
+          // NOTE: Do NOT set LONG_CRANK_BEFORE_START here - that's for cars that eventually start
+          // A no-start with normal crank speed points to fuel/ignition, not battery
         ],
         next: "fuel_check", // Fuel system path
       },
