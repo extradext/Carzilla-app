@@ -28,11 +28,17 @@ export function App() {
   const [activeVehicle, setActiveVehicle] = useState<Vehicle | null>(null);
   const [showSafetyDisclaimer, setShowSafetyDisclaimer] = useState(false);
   const [diagnosticAnswers, setDiagnosticAnswers] = useState<Record<string, string>>({});
+  const [vehicleRefreshKey, setVehicleRefreshKey] = useState(0);
 
   // Check safety disclaimer on launch
   useEffect(() => {
     if (!isSafetyAcknowledged()) {
       setShowSafetyDisclaimer(true);
+    }
+    // Load initial active vehicle
+    const active = getActiveVehicle();
+    if (active) {
+      setActiveVehicle(active);
     }
   }, []);
 
@@ -41,11 +47,25 @@ export function App() {
     setShowSafetyDisclaimer(false);
   };
 
-  const handleVehicleChange = (vehicle: Vehicle | null) => {
+  const handleVehicleChange = useCallback((vehicle: Vehicle | null) => {
     setActiveVehicle(vehicle);
     // Clear result when switching vehicles
     setLastResult(null);
     setDiagnosticAnswers({});
+  }, []);
+
+  // Trigger refresh of vehicle selector when returning from Vehicles tab
+  const handleTabChange = (newTab: Tab) => {
+    if (tab === "vehicles" && newTab !== "vehicles") {
+      // Coming back from vehicles tab, refresh the selector
+      setVehicleRefreshKey((k) => k + 1);
+      // Also refresh active vehicle from storage
+      const active = getActiveVehicle();
+      if (active) {
+        setActiveVehicle(active);
+      }
+    }
+    setTab(newTab);
   };
 
   const handleDiagnosticResult = (result: DiagnosticResult, answers: Record<string, string>) => {
