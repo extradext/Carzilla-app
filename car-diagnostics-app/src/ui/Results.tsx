@@ -1503,6 +1503,9 @@ export function Results({
                 )}
               </div>
             )}
+
+            {/* How to Check / Verify Guide - renders only when guide exists for component */}
+            <VerificationGuideSection componentId={result.specificComponent} />
           </>
         );
       })()}
