@@ -163,8 +163,10 @@ const ALL_QUESTIONS: Record<string, Question> = {
         text: "They stay bright - barely change at all",
         observations: [
           { id: OBSERVATION_IDS.HEADLIGHTS_DIM, value: "NO" },
+          { id: OBSERVATION_IDS.DASH_RESETS_WHEN_CRANKING, value: "NO" },
+          { id: OBSERVATION_IDS.LIGHTS_FLICKER, value: "NO" },
         ],
-        next: "starter_tap_test", // Battery is fine, likely starter
+        next: "starter_behavior", // Battery is fine, investigate starter/other
       },
     ],
   },
