@@ -25,6 +25,8 @@ import { generateUUID } from "../utils/uuid";
 type DiagnosticFlowProps = {
   vehicleId: string | null;
   onResult: (result: DiagnosticResult, answers: Record<string, string>) => void;
+  excludedHypotheses?: string[];
+  onClearExclusions?: () => void;
 };
 
 type FlowStep = "entry" | "questions";
