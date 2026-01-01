@@ -108,10 +108,17 @@ export const OBSERVATION_IDS = {
   // ---------------------------------------------------------------------------
   BRAKE_PEDAL_SOFT: "brake_pedal_soft",
   BRAKE_PEDAL_PULSATION: "brake_pedal_pulsation",
+  BRAKE_PEDAL_SINKS: "brake_pedal_sinks",
   GRINDING_NOISE_WHEN_BRAKING: "grinding_noise_when_braking",
   PULLS_WHEN_BRAKING: "pulls_when_braking",
   WHEEL_HOTTER_THAN_OTHERS: "wheel_hotter_than_others",
   BURNING_SMELL_NEAR_WHEEL: "burning_smell_near_wheel",
+  // Brake fluid observations (per brake fluid logic directive)
+  BRAKE_FLUID_LEVEL_LOW: "brake_fluid_level_low",
+  BRAKE_FLUID_LEVEL_NORMAL: "brake_fluid_level_normal",
+  RECENT_BRAKE_SERVICE: "recent_brake_service",
+  VISIBLE_FLUID_UNDER_CAR: "visible_fluid_under_car",
+  VISIBLE_FLUID_NEAR_WHEEL: "visible_fluid_near_wheel",
 
   // ---------------------------------------------------------------------------
   // TIRES / WHEELS (DRAFT)
