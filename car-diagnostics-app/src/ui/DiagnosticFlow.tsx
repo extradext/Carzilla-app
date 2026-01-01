@@ -456,59 +456,181 @@ const ALL_QUESTIONS: Record<string, Question> = {
     ],
   },
 
-  starter_tap_test: {
-    id: "starter_tap_test",
-    text: "Here's a classic test: Can you have someone tap the starter motor with a wrench while you turn the key?",
-    subtext: "The starter is usually on the lower side of the engine - a firm tap, not a hard hit",
+  // Starter behavior questions - NO physical tests, only observable patterns
+  starter_behavior: {
+    id: "starter_behavior",
+    text: "Thinking back to when the problem started, what did you first notice?",
     options: [
       {
-        id: "tap_worked",
-        text: "Yes! It started after tapping",
-        observations: [],
-        next: null,
-        canResolve: true,
-        definitiveHypothesis: "starter", // Override engine - definitive starter diagnosis
-      },
-      {
-        id: "tap_no_change",
-        text: "Tried it - no change",
+        id: "sudden_failure",
+        text: "It suddenly stopped working - was fine before",
         observations: [],
         next: "starter_history",
       },
       {
-        id: "cant_tap",
-        text: "I can't do that test right now",
+        id: "intermittent_before",
+        text: "It was working sometimes, failing other times, before this",
         observations: [],
-        next: "starter_history",
+        next: "intermittent_pattern",
+      },
+      {
+        id: "gradual_worse",
+        text: "Starting had been getting slower/harder over time",
+        observations: [{ id: OBSERVATION_IDS.ENGINE_CRANKS_SLOWLY, value: "YES" }],
+        next: "confirm_battery_symptoms",
       },
     ],
   },
 
-  // Additional starter questions
-  starter_history: {
-    id: "starter_history",
-    text: "Has starting been inconsistent lately?",
-    subtext: "Sometimes works, sometimes doesn't",
+  // Intermittent pattern - key for starter diagnosis
+  intermittent_pattern: {
+    id: "intermittent_pattern",
+    text: "When it was working intermittently, was there any pattern?",
     options: [
       {
-        id: "intermittent",
-        text: "Yes - sometimes it starts fine, sometimes it doesn't",
+        id: "works_after_wait",
+        text: "If I waited a few minutes, it would work again",
+        observations: [],
+        next: null,
+        canResolve: true, // Classic starter symptom
+      },
+      {
+        id: "works_second_try",
+        text: "Sometimes it worked on the second or third try",
+        observations: [],
+        next: null,
+        canResolve: true, // Starter or relay
+      },
+      {
+        id: "temp_related",
+        text: "Seemed worse when cold / hot",
+        observations: [],
+        next: "temperature_pattern",
+      },
+      {
+        id: "no_pattern",
+        text: "Completely random, no pattern",
+        observations: [],
+        next: "retry_count",
+      },
+    ],
+  },
+
+  // Temperature pattern
+  temperature_pattern: {
+    id: "temperature_pattern",
+    text: "Is the problem worse when the engine is cold or hot?",
+    options: [
+      {
+        id: "worse_cold",
+        text: "Worse when cold - first start of the day",
+        observations: [],
+        next: "confirm_battery_symptoms", // Could be battery or starter
+      },
+      {
+        id: "worse_hot",
+        text: "Worse when hot - after driving",
+        observations: [],
+        next: null,
+        canResolve: true, // Hot = classic starter failure
+      },
+      {
+        id: "no_temp_pattern",
+        text: "Temperature doesn't seem to matter",
+        observations: [],
+        next: "retry_count",
+      },
+    ],
+  },
+
+  // STATE CONTAMINATION: How many times did you try?
+  retry_count: {
+    id: "retry_count",
+    text: "Before giving up, how many times did you try to start the car?",
+    subtext: "This helps understand if repeated attempts affected the battery",
+    options: [
+      {
+        id: "one_or_two",
+        text: "Just once or twice",
+        observations: [],
+        next: "security_light", // Fresh failure, continue investigation
+      },
+      {
+        id: "several_times",
+        text: "Several times (3-5 attempts)",
+        observations: [],
+        next: "symptoms_changed",
+      },
+      {
+        id: "many_times",
+        text: "Many times (more than 5)",
+        observations: [],
+        next: "symptoms_changed",
+      },
+    ],
+  },
+
+  // STATE CONTAMINATION: Did symptoms change with retries?
+  symptoms_changed: {
+    id: "symptoms_changed",
+    text: "Did the clicking or cranking sound change after multiple attempts?",
+    subtext: "This helps distinguish the original problem from battery drain",
+    options: [
+      {
+        id: "got_weaker",
+        text: "Yes - the sound got weaker or slower with each try",
+        observations: [],
+        // State contamination: battery drained by retries, original problem may not be battery
+        next: "original_symptom",
+      },
+      {
+        id: "stayed_same",
+        text: "No - sounded the same every time",
+        observations: [],
+        next: null,
+        canResolve: true, // Consistent symptom = more reliable diagnosis
+      },
+      {
+        id: "got_nothing",
+        text: "Eventually got complete silence",
+        observations: [],
+        next: "original_symptom",
+      },
+    ],
+  },
+
+  // What was the ORIGINAL symptom before battery drain?
+  original_symptom: {
+    id: "original_symptom",
+    text: "What happened on the FIRST attempt, before any battery drain?",
+    subtext: "The first try tells us the most about the real problem",
+    options: [
+      {
+        id: "first_was_click",
+        text: "Single click, then nothing",
+        observations: [{ id: OBSERVATION_IDS.SINGLE_CLICK_NO_CRANK, value: "YES" }],
+        next: null,
+        canResolve: true, // Original was click = likely starter, not battery
+      },
+      {
+        id: "first_was_slow",
+        text: "Slow/weak cranking",
+        observations: [{ id: OBSERVATION_IDS.ENGINE_CRANKS_SLOWLY, value: "YES" }],
+        next: null,
+        canResolve: true, // Could be battery or starter
+      },
+      {
+        id: "first_was_normal",
+        text: "Cranked normally but didn't start",
+        observations: [{ id: OBSERVATION_IDS.LONG_CRANK_BEFORE_START, value: "YES" }],
+        next: "fuel_check", // Not electrical issue
+      },
+      {
+        id: "dont_remember",
+        text: "I don't remember the first attempt",
         observations: [],
         next: null,
         canResolve: true,
-        definitiveHypothesis: "starter", // Intermittent starting = classic starter failure
-      },
-      {
-        id: "first_failure",
-        text: "No - this is the first time it won't start",
-        observations: [],
-        next: "security_light",
-      },
-      {
-        id: "getting_worse",
-        text: "It's been getting harder to start over time",
-        observations: [{ id: OBSERVATION_IDS.ENGINE_CRANKS_SLOWLY, value: "YES" }],
-        next: "confirm_battery_symptoms",
       },
     ],
   },
