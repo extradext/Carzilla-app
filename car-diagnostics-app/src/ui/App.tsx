@@ -133,7 +133,7 @@ export function App() {
           <button
             className="button"
             data-testid="nav-diagnose"
-            onClick={() => setTab("diagnose")}
+            onClick={() => handleTabChange("diagnose")}
             style={tab === "diagnose" ? { background: "rgba(255,255,255,0.2)" } : {}}
           >
             Diagnose
@@ -141,7 +141,7 @@ export function App() {
           <button
             className="button"
             data-testid="nav-results"
-            onClick={() => setTab("results")}
+            onClick={() => handleTabChange("results")}
             style={tab === "results" ? { background: "rgba(255,255,255,0.2)" } : {}}
           >
             Results
@@ -149,7 +149,7 @@ export function App() {
           <button
             className="button"
             data-testid="nav-garage"
-            onClick={() => setTab("garage")}
+            onClick={() => handleTabChange("garage")}
             style={tab === "garage" ? { background: "rgba(255,255,255,0.2)" } : {}}
           >
             My Garage
@@ -157,7 +157,7 @@ export function App() {
           <button
             className="button"
             data-testid="nav-tips"
-            onClick={() => setTab("tips")}
+            onClick={() => handleTabChange("tips")}
             style={tab === "tips" ? { background: "rgba(255,255,255,0.2)" } : {}}
           >
             Tips & Tricks
@@ -165,7 +165,7 @@ export function App() {
           <button
             className="button"
             data-testid="nav-vehicles"
-            onClick={() => setTab("vehicles")}
+            onClick={() => handleTabChange("vehicles")}
             style={tab === "vehicles" ? { background: "rgba(255,255,255,0.2)" } : {}}
           >
             Vehicles
@@ -173,7 +173,7 @@ export function App() {
           <button
             className="button"
             data-testid="nav-settings"
-            onClick={() => setTab("settings")}
+            onClick={() => handleTabChange("settings")}
             style={tab === "settings" ? { background: "rgba(255,255,255,0.2)" } : {}}
           >
             Settings
