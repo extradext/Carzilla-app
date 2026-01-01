@@ -426,6 +426,19 @@ function MaintenanceTab({ vehicleId }: { vehicleId: string }) {
         Track oil changes, brakes, component replacements, and mileage entries.
       </p>
 
+      {/* Brake Fluid Educational Tip */}
+      <div style={{ 
+        marginBottom: 16, 
+        padding: 10, 
+        background: 'rgba(100,150,255,0.08)', 
+        borderRadius: 6,
+        border: '1px solid rgba(100,150,255,0.15)',
+        fontSize: 13,
+      }}>
+        <strong>💡 Tip:</strong> Check your usual parking spot for fresh fluid spots and log them here. 
+        If you add brake fluid, log the date and amount so you can tell if it's dropping again.
+      </div>
+
       {!showForm && (
         <button className="button" onClick={() => setShowForm(true)} data-testid="add-maintenance-btn">
           + Add Maintenance Record
