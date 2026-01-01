@@ -1698,6 +1698,7 @@ export function DiagnosticFlow({ vehicleId, onResult, excludedHypotheses = [], o
       observations: obs,
       resultId: generateUUID(),
       timestamp: new Date().toISOString(),
+      excludedHypotheses,
     });
 
     onResult(output.result, ans);
@@ -1723,6 +1724,38 @@ export function DiagnosticFlow({ vehicleId, onResult, excludedHypotheses = [], o
         <p style={{ opacity: 0.8, marginBottom: 20 }}>
           Select the issue that best describes your situation
         </p>
+
+        {/* Show excluded hypotheses if any (Pro re-run mode) */}
+        {excludedHypotheses.length > 0 && (
+          <div
+            style={{
+              marginBottom: 16,
+              padding: 12,
+              background: "rgba(255,200,50,0.15)",
+              borderRadius: 8,
+              border: "1px solid rgba(255,200,50,0.3)",
+            }}
+            data-testid="excluded-hypotheses-banner"
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <strong>⭐ Pro Mode: Re-running with exclusions</strong>
+                <p style={{ margin: "4px 0 0", fontSize: 14, opacity: 0.9 }}>
+                  Excluding: {excludedHypotheses.join(", ")}
+                </p>
+              </div>
+              {onClearExclusions && (
+                <button
+                  className="button"
+                  onClick={onClearExclusions}
+                  style={{ padding: "6px 12px", fontSize: 13 }}
+                >
+                  Clear & Start Fresh
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
         <div style={{ display: "grid", gap: 12 }} data-testid="entry-anchor-options">
           {Object.entries(ENTRY_ANCHOR_INFO).map(([anchor, info]) => (
