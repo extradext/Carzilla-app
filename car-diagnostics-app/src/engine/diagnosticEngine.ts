@@ -373,17 +373,86 @@ const COMPONENT_REFINEMENTS: Record<string, ComponentRefinement[]> = {
   ],
   
   // BRAKES system refinements
+  // Per brake fluid logic directive: Low fluid alone does NOT hard-trigger leak.
+  // Refinements are ordered from most specific to least specific (first match wins).
   brakes_heat_drag: [
+    // === VISIBLE LEAK EVIDENCE (STRONG) ===
+    // Visible fluid near wheel = strong leak indicator at caliper/hose
+    {
+      component: "brake_fluid_leak_caliper_hose",
+      requiredObs: [OBSERVATION_IDS.VISIBLE_FLUID_NEAR_WHEEL],
+      excludeObs: [],
+    },
+    // Visible fluid under car + low fluid = general brake leak
+    {
+      component: "brake_fluid_leak",
+      requiredObs: [OBSERVATION_IDS.VISIBLE_FLUID_UNDER_CAR, OBSERVATION_IDS.BRAKE_FLUID_LEVEL_LOW],
+      excludeObs: [],
+    },
+    // Visible fluid under car alone (could be any fluid but suspicious)
+    {
+      component: "brake_fluid_leak",
+      requiredObs: [OBSERVATION_IDS.VISIBLE_FLUID_UNDER_CAR],
+      excludeObs: [OBSERVATION_IDS.BRAKE_FLUID_LEVEL_NORMAL],
+    },
+    
+    // === MASTER CYLINDER INTERNAL BYPASS ===
+    // Pedal sinks + normal fluid = internal master cylinder bypass (no external leak)
+    {
+      component: "master_cylinder_internal",
+      requiredObs: [OBSERVATION_IDS.BRAKE_PEDAL_SINKS, OBSERVATION_IDS.BRAKE_FLUID_LEVEL_NORMAL],
+      excludeObs: [],
+    },
+    // Pedal sinks alone (could be master or leak)
+    {
+      component: "master_cylinder_internal",
+      requiredObs: [OBSERVATION_IDS.BRAKE_PEDAL_SINKS],
+      excludeObs: [OBSERVATION_IDS.VISIBLE_FLUID_UNDER_CAR, OBSERVATION_IDS.VISIBLE_FLUID_NEAR_WHEEL],
+    },
+    
+    // === AIR IN LINES / BLEED ISSUE ===
+    // Recent brake service + spongy + normal fluid = air in lines
+    {
+      component: "air_in_brake_lines",
+      requiredObs: [OBSERVATION_IDS.RECENT_BRAKE_SERVICE, OBSERVATION_IDS.BRAKE_PEDAL_SOFT, OBSERVATION_IDS.BRAKE_FLUID_LEVEL_NORMAL],
+      excludeObs: [],
+    },
+    // Recent brake service + spongy (without fluid check)
+    {
+      component: "air_in_brake_lines",
+      requiredObs: [OBSERVATION_IDS.RECENT_BRAKE_SERVICE, OBSERVATION_IDS.BRAKE_PEDAL_SOFT],
+      excludeObs: [OBSERVATION_IDS.BRAKE_FLUID_LEVEL_LOW],
+    },
+    
+    // === HYDRAULIC LEAK (spongy + low fluid) ===
+    // Spongy pedal + low fluid = likely leak (MEDIUM support, needs corroboration)
+    {
+      component: "brake_fluid_leak",
+      requiredObs: [OBSERVATION_IDS.BRAKE_PEDAL_SOFT, OBSERVATION_IDS.BRAKE_FLUID_LEVEL_LOW],
+      excludeObs: [OBSERVATION_IDS.RECENT_BRAKE_SERVICE],
+    },
+    
+    // === PAD/ROTOR WEAR ===
+    // Grinding noise = pad wear (strong)
     {
       component: "brake_pads",
       requiredObs: [OBSERVATION_IDS.GRINDING_NOISE_WHEN_BRAKING],
       excludeObs: [],
     },
+    // Grinding + low fluid = pads worn (fluid in calipers due to pad wear)
+    {
+      component: "brake_pads",
+      requiredObs: [OBSERVATION_IDS.GRINDING_NOISE_WHEN_BRAKING, OBSERVATION_IDS.BRAKE_FLUID_LEVEL_LOW],
+      excludeObs: [],
+    },
+    // Rotors (pulsation)
     {
       component: "brake_rotors",
       requiredObs: [OBSERVATION_IDS.BRAKE_PEDAL_PULSATION],
       excludeObs: [],
     },
+    
+    // === CALIPER ISSUES (drag/heat) ===
     {
       component: "brake_caliper",
       requiredObs: [OBSERVATION_IDS.WHEEL_HOTTER_THAN_OTHERS],
@@ -394,10 +463,13 @@ const COMPONENT_REFINEMENTS: Record<string, ComponentRefinement[]> = {
       requiredObs: [OBSERVATION_IDS.PULLS_WHEN_BRAKING],
       excludeObs: [],
     },
+    
+    // === GENERIC SPONGY PEDAL (least specific, fallback) ===
+    // Spongy pedal alone (no other context) = generic brake fluid / hydraulic issue
     {
       component: "brake_fluid",
       requiredObs: [OBSERVATION_IDS.BRAKE_PEDAL_SOFT],
-      excludeObs: [],
+      excludeObs: [OBSERVATION_IDS.RECENT_BRAKE_SERVICE, OBSERVATION_IDS.VISIBLE_FLUID_UNDER_CAR, OBSERVATION_IDS.VISIBLE_FLUID_NEAR_WHEEL],
     },
   ],
   
