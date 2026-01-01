@@ -542,6 +542,80 @@ const COMPONENT_DETAILS: Record<string, ComponentInfo> = {
     urgency: "high",
     estimatedCost: "$50-$150 for fluid flush/bleed"
   },
+  brake_fluid_leak: {
+    name: "Brake Fluid Leak",
+    description: "Your brake system is likely leaking fluid. This is serious because it can lead to brake failure. Low fluid combined with other symptoms (spongy pedal, visible wetness, warning light) strongly indicates a leak.",
+    symptoms: [
+      "Low brake fluid level (below MIN)",
+      "Spongy or soft brake pedal",
+      "Fresh fluid spots where you park",
+      "Brake warning light on"
+    ],
+    whatToCheck: [
+      "Check fluid level in reservoir - note if it drops",
+      "Look for wet spots under car where you normally park",
+      "Inspect around each wheel for wetness at caliper/hose",
+      "Check master cylinder for external leaks",
+      "DO NOT just top off fluid - find the leak first"
+    ],
+    urgency: "high",
+    estimatedCost: "$100-$500+ depending on leak location"
+  },
+  brake_fluid_leak_caliper_hose: {
+    name: "Brake Fluid Leak (Caliper/Hose Area)",
+    description: "There appears to be a brake fluid leak at or near a wheel. This is typically from a leaking brake hose, caliper seal, or wheel cylinder. The leak location near a wheel helps narrow down the source.",
+    symptoms: [
+      "Wetness or fluid visible near a wheel or caliper",
+      "Low brake fluid level",
+      "Reduced braking power on that corner",
+      "Brake warning light may be on"
+    ],
+    whatToCheck: [
+      "Clean area and identify exact leak source",
+      "Check flex hose condition and connections",
+      "Inspect caliper for external fluid",
+      "Check wheel cylinder (if drum brakes)",
+      "Repair immediately - brake failure risk"
+    ],
+    urgency: "high",
+    estimatedCost: "$80-$250 for hose; $150-$400 for caliper"
+  },
+  master_cylinder_internal: {
+    name: "Master Cylinder (Internal Bypass)",
+    description: "Your master cylinder is likely failing internally. When you press the brake pedal and hold steady pressure, it slowly sinks because fluid is bypassing the internal seals. This happens even with normal external fluid level because the leak is internal.",
+    symptoms: [
+      "Brake pedal slowly sinks when holding steady pressure",
+      "Fluid level may be normal (internal leak)",
+      "No visible external leaks",
+      "Braking feels less effective over time"
+    ],
+    whatToCheck: [
+      "Hold firm pedal pressure at a stop - does it sink?",
+      "Check for fluid at back of master cylinder (firewall side)",
+      "Test: pump pedal several times, hold firm - sinking = bad master",
+      "Usually requires master cylinder replacement"
+    ],
+    urgency: "high",
+    estimatedCost: "$200-$500 for master cylinder replacement"
+  },
+  air_in_brake_lines: {
+    name: "Air in Brake Lines",
+    description: "There is likely air trapped in your brake hydraulic system, causing a soft, spongy pedal feel. This commonly happens after recent brake work (pad replacement, caliper service, line repair) if the system wasn't properly bled.",
+    symptoms: [
+      "Soft or spongy brake pedal",
+      "Pedal feels different after recent brake work",
+      "Brake fluid level is normal",
+      "No visible leaks"
+    ],
+    whatToCheck: [
+      "Confirm recent brake work was done",
+      "Bleed brakes starting from wheel furthest from master",
+      "Check for loose bleeder valves",
+      "May need ABS bleeding procedure on some vehicles"
+    ],
+    urgency: "medium",
+    estimatedCost: "$50-$150 for professional brake bleed"
+  },
   
   // Wheel/tire components
   wheel_bearing: {
