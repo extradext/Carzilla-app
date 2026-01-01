@@ -1428,7 +1428,7 @@ const ALL_QUESTIONS: Record<string, Question> = {
         id: "soft",
         text: "Soft/spongy - pedal goes too far down",
         observations: [{ id: OBSERVATION_IDS.BRAKE_PEDAL_SOFT, value: "YES" }],
-        next: "brake_fluid_check",
+        next: "brake_pedal_sink_check",
       },
       {
         id: "pulsating",
@@ -1453,47 +1453,141 @@ const ALL_QUESTIONS: Record<string, Question> = {
     ],
   },
 
+  brake_pedal_sink_check: {
+    id: "brake_pedal_sink_check",
+    text: "When you press the brake pedal firmly at a stop and hold steady pressure, what happens?",
+    subtext: "Hold firm pressure for 10-15 seconds while the car is stationary",
+    phrasingApproved: true,
+    options: [
+      {
+        id: "sinks",
+        text: "The pedal slowly sinks toward the floor while holding",
+        observations: [{ id: OBSERVATION_IDS.BRAKE_PEDAL_SINKS, value: "YES" }],
+        next: "brake_fluid_check",
+      },
+      {
+        id: "holds",
+        text: "The pedal holds firm and doesn't move",
+        observations: [],
+        next: "brake_fluid_check",
+      },
+      {
+        id: "not_sure",
+        text: "I haven't tested this / Not sure",
+        observations: [],
+        next: "brake_fluid_check",
+      },
+    ],
+  },
+
   brake_fluid_check: {
     id: "brake_fluid_check",
     text: "Looking at the brake fluid reservoir under the hood, what is the fluid level?",
     subtext: "The reservoir is typically a small translucent container near the firewall with MIN/MAX markings",
-    infoText: "🔍 Brake fluid should be between MIN and MAX lines. Dark or murky fluid indicates contamination.",
+    infoText: "💡 Brake fluid doesn't normally 'get used up' like washer fluid. If it's low, it typically indicates worn brake pads OR a leak. Don't just top it off without understanding why.",
     phrasingApproved: true,
     options: [
       {
         id: "fluid_low",
         text: "Fluid level is below MIN line or reservoir appears low",
-        observations: [],
-        next: "brake_leak_check",
+        observations: [{ id: OBSERVATION_IDS.BRAKE_FLUID_LEVEL_LOW, value: "YES" }],
+        next: "recent_brake_service_check",
       },
       {
         id: "fluid_ok",
         text: "Fluid level is between MIN and MAX lines",
+        observations: [{ id: OBSERVATION_IDS.BRAKE_FLUID_LEVEL_NORMAL, value: "YES" }],
+        next: "recent_brake_service_check",
+      },
+      {
+        id: "not_checked",
+        text: "I haven't checked the fluid level / Can't access it",
         observations: [],
-        next: null,
-        canResolve: true, // Air in lines
+        next: "recent_brake_service_check",
       },
     ],
   },
 
-  brake_leak_check: {
-    id: "brake_leak_check",
-    text: "Looking at the inner side of each wheel, do you see signs of fluid leaking?",
-    infoText: "⚠️ Brake fluid is clear to amber colored. Wet spots on the inner wheel or brake components indicate a leak.",
+  recent_brake_service_check: {
+    id: "recent_brake_service_check",
+    text: "Has any brake work been done on this vehicle recently?",
+    subtext: "Including pad replacement, rotor replacement, caliper service, or brake line work/bleeding",
     phrasingApproved: true,
     options: [
       {
-        id: "yes_leak",
-        text: "Visible wet spots or drips near a wheel or brake caliper",
+        id: "yes_recent",
+        text: "Yes - brake work was done recently (past few weeks)",
+        observations: [{ id: OBSERVATION_IDS.RECENT_BRAKE_SERVICE, value: "YES" }],
+        next: "brake_visible_leak_check",
+      },
+      {
+        id: "no_recent",
+        text: "No - no recent brake work",
+        observations: [],
+        next: "brake_visible_leak_check",
+      },
+      {
+        id: "not_sure",
+        text: "I'm not sure / Don't know the service history",
+        observations: [],
+        next: "brake_visible_leak_check",
+      },
+    ],
+  },
+
+  brake_visible_leak_check: {
+    id: "brake_visible_leak_check",
+    text: "Do you see any fresh fluid spots where you normally park?",
+    infoText: "🔍 Brake fluid is typically clear to amber colored. Check your usual parking spot for wet spots.",
+    phrasingApproved: true,
+    options: [
+      {
+        id: "yes_under_car",
+        text: "Yes - fresh wet spots visible where I normally park",
+        observations: [{ id: OBSERVATION_IDS.VISIBLE_FLUID_UNDER_CAR, value: "YES" }],
+        next: "brake_leak_location_check",
+      },
+      {
+        id: "no_spots",
+        text: "No - no wet spots where I park",
+        observations: [],
+        next: "brake_leak_location_check",
+      },
+      {
+        id: "not_checked",
+        text: "I haven't checked",
+        observations: [],
+        next: "brake_leak_location_check",
+      },
+    ],
+  },
+
+  brake_leak_location_check: {
+    id: "brake_leak_location_check",
+    text: "Looking at the inner side of each wheel, do you see wetness or fluid near the brake caliper area?",
+    infoText: "⚠️ Wet spots on the inner wheel or brake components near a wheel specifically indicate a leak at that location.",
+    phrasingApproved: true,
+    options: [
+      {
+        id: "yes_near_wheel",
+        text: "Yes - visible wetness or fluid near a wheel/caliper",
+        observations: [{ id: OBSERVATION_IDS.VISIBLE_FLUID_NEAR_WHEEL, value: "YES" }],
+        next: null,
+        canResolve: true, // Caliper/hose leak
+      },
+      {
+        id: "no_leak",
+        text: "No - no visible leaks or wet areas near wheels",
         observations: [],
         next: null,
         canResolve: true,
       },
       {
-        id: "no_leak",
-        text: "No visible leaks or wet areas near wheels",
+        id: "not_checked",
+        text: "I haven't checked / Can't see",
         observations: [],
         next: null,
+        canResolve: true,
       },
     ],
   },
