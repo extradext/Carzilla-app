@@ -2013,11 +2013,10 @@ export function DiagnosticFlow({ vehicleId, onResult, excludedHypotheses = [], o
     setQuestionHistory([]);
     setAnswers({});
     setObservations([]);
-    setDefinitiveHypothesis(null);
   };
 
   // Run the diagnostic engine
-  const runDiagnosis = (obs: ObservationResponse[], ans: Record<string, string>, overrideHypothesis?: string | null) => {
+  const runDiagnosis = (obs: ObservationResponse[], ans: Record<string, string>) => {
     if (!entryAnchor) return;
 
     const output = runDiagnosticEngine({
@@ -2028,12 +2027,6 @@ export function DiagnosticFlow({ vehicleId, onResult, excludedHypotheses = [], o
       timestamp: new Date().toISOString(),
       excludedHypotheses,
     });
-
-    // If we have a definitive hypothesis from the questions, override the engine's result
-    if (overrideHypothesis) {
-      output.result.topHypothesis = overrideHypothesis;
-      output.result.confidence = 0.95; // High confidence for definitive answers
-    }
 
     onResult(output.result, ans);
   };
