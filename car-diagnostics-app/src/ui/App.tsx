@@ -18,7 +18,7 @@ import { VehicleSelector, VehicleProfiles } from "./VehicleProfiles";
 import { MyGarage } from "./MyGarage";
 import { TipsAndTricks } from "./TipsAndTricks";
 import { Settings } from "./Settings";
-import { isSafetyAcknowledged, setSafetyAcknowledged, getVehicles, getActiveVehicle } from "../storage/localStore";
+import { isSafetyAcknowledged, setSafetyAcknowledged, getActiveVehicle } from "../storage/localStore";
 
 type Tab = "diagnose" | "results" | "garage" | "tips" | "vehicles" | "settings";
 
@@ -29,6 +29,8 @@ export function App() {
   const [showSafetyDisclaimer, setShowSafetyDisclaimer] = useState(false);
   const [diagnosticAnswers, setDiagnosticAnswers] = useState<Record<string, string>>({});
   const [vehicleRefreshKey, setVehicleRefreshKey] = useState(0);
+  const [excludedHypotheses, setExcludedHypotheses] = useState<string[]>([]);
+  const [diagnosticKey, setDiagnosticKey] = useState(0);
 
   // Check safety disclaimer on launch
   useEffect(() => {
@@ -52,6 +54,7 @@ export function App() {
     // Clear result when switching vehicles
     setLastResult(null);
     setDiagnosticAnswers({});
+    setExcludedHypotheses([]);
   }, []);
 
   // Trigger refresh of vehicle selector when returning from Vehicles tab
@@ -72,6 +75,24 @@ export function App() {
     setLastResult(result);
     setDiagnosticAnswers(answers);
     setTab("results");
+  };
+
+  // Handle re-run with exclusion (Pro feature)
+  const handleRerunExcluding = (hypothesis: string) => {
+    const newExclusions = [...excludedHypotheses, hypothesis];
+    setExcludedHypotheses(newExclusions);
+    setLastResult(null);
+    setDiagnosticKey((k) => k + 1); // Force re-mount of DiagnosticFlow
+    setTab("diagnose");
+  };
+
+  // Clear exclusions when starting fresh
+  const handleStartFresh = () => {
+    setExcludedHypotheses([]);
+    setLastResult(null);
+    setDiagnosticAnswers({});
+    setDiagnosticKey((k) => k + 1);
+    setTab("diagnose");
   };
 
   return (
@@ -184,8 +205,11 @@ export function App() {
       <main data-testid="app-main">
         {tab === "diagnose" && (
           <DiagnosticFlow
+            key={diagnosticKey}
             vehicleId={activeVehicle?.id ?? null}
             onResult={handleDiagnosticResult}
+            excludedHypotheses={excludedHypotheses}
+            onClearExclusions={handleStartFresh}
           />
         )}
 
@@ -195,7 +219,10 @@ export function App() {
             vehicleId={activeVehicle?.id ?? null}
             vehicle={activeVehicle}
             diagnosticAnswers={diagnosticAnswers}
+            excludedHypotheses={excludedHypotheses}
             onBackToFlow={() => setTab("diagnose")}
+            onRerunExcluding={handleRerunExcluding}
+            onStartFresh={handleStartFresh}
           />
         )}
         {tab === "results" && !lastResult && (
