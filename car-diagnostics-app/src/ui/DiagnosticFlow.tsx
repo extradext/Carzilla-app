@@ -63,7 +63,7 @@ const ALL_QUESTIONS: Record<string, Question> = {
         observations: [
           { id: OBSERVATION_IDS.RAPID_CLICKING_ON_START, value: "YES" },
         ],
-        next: "jump_start", // Battery-related path
+        next: "lights_during_click", // Check lights to confirm battery
       },
       {
         id: "single_click",
@@ -71,7 +71,7 @@ const ALL_QUESTIONS: Record<string, Question> = {
         observations: [
           { id: OBSERVATION_IDS.SINGLE_CLICK_NO_CRANK, value: "YES" },
         ],
-        next: "starter_symptoms", // Starter-related path
+        next: "lights_during_click", // Could be battery OR starter - need to differentiate
       },
       {
         id: "nothing",
@@ -87,7 +87,7 @@ const ALL_QUESTIONS: Record<string, Question> = {
         observations: [
           { id: OBSERVATION_IDS.ENGINE_CRANKS_SLOWLY, value: "YES" },
         ],
-        next: "jump_start", // Battery-related path
+        next: "lights_during_click", // Battery-related path
       },
       {
         id: "normal_crank",
@@ -101,6 +101,72 @@ const ALL_QUESTIONS: Record<string, Question> = {
     ],
   },
 
+  // NEW: Key differentiating question - do lights work normally?
+  lights_during_click: {
+    id: "lights_during_click",
+    text: "When you turn the key to ON (before trying to start), are all the dashboard lights bright?",
+    subtext: "Check the dashboard warning lights and headlights",
+    options: [
+      {
+        id: "lights_bright",
+        text: "Yes - all lights come on bright and normal",
+        observations: [
+          { id: OBSERVATION_IDS.HEADLIGHTS_DIM, value: "NO" },
+        ],
+        next: "lights_when_cranking", // Lights OK, check what happens during crank
+      },
+      {
+        id: "lights_dim_weak",
+        text: "No - lights are dim or weak",
+        observations: [
+          { id: OBSERVATION_IDS.HEADLIGHTS_DIM, value: "YES" },
+        ],
+        next: "jump_start", // Dim lights = likely battery
+      },
+      {
+        id: "no_lights_at_all",
+        text: "No lights come on at all",
+        observations: [
+          { id: OBSERVATION_IDS.INTERMITTENT_NO_POWER, value: "YES" },
+        ],
+        next: "battery_terminals", // Total power loss
+      },
+    ],
+  },
+
+  // What happens to lights DURING the crank attempt?
+  lights_when_cranking: {
+    id: "lights_when_cranking",
+    text: "What happens to the dashboard/headlights when you try to start?",
+    subtext: "Watch the lights as you turn the key to START",
+    options: [
+      {
+        id: "lights_dim_during",
+        text: "They dim significantly or flicker",
+        observations: [
+          { id: OBSERVATION_IDS.LIGHTS_FLICKER, value: "YES" },
+        ],
+        next: "jump_start", // Battery can't handle load
+      },
+      {
+        id: "lights_go_out",
+        text: "They go completely out momentarily",
+        observations: [
+          { id: OBSERVATION_IDS.DASH_RESETS_WHEN_CRANKING, value: "YES" },
+        ],
+        next: "battery_terminals", // Bad connection or dead cell
+      },
+      {
+        id: "lights_stay_bright",
+        text: "They stay bright - barely change at all",
+        observations: [
+          { id: OBSERVATION_IDS.HEADLIGHTS_DIM, value: "NO" },
+        ],
+        next: "starter_tap_test", // Battery is fine, likely starter
+      },
+    ],
+  },
+
   jump_start: {
     id: "jump_start",
     text: "Have you tried jump starting it?",
@@ -109,20 +175,51 @@ const ALL_QUESTIONS: Record<string, Question> = {
         id: "jump_worked",
         text: "Yes - it started with a jump",
         observations: [{ id: OBSERVATION_IDS.JUMP_START_HELPS, value: "YES" }],
-        next: "battery_age",
-        canResolve: true, // Strong indicator of battery issue
+        next: "battery_age", // Confirm battery issue
       },
       {
         id: "jump_failed",
         text: "Yes - still won't start even with a jump",
         observations: [{ id: OBSERVATION_IDS.JUMP_START_HELPS, value: "NO" }],
-        next: "starter_symptoms", // Not battery, check starter
+        next: "starter_tap_test", // Not battery, check starter
       },
       {
         id: "no_jump",
         text: "Haven't tried yet",
         observations: [],
-        next: "dashboard_lights",
+        next: "headlights_test", // Do another test to narrow down
+      },
+    ],
+  },
+
+  // Direct headlight test
+  headlights_test: {
+    id: "headlights_test",
+    text: "Turn on the headlights. How bright are they?",
+    options: [
+      {
+        id: "headlights_bright",
+        text: "Bright and strong",
+        observations: [
+          { id: OBSERVATION_IDS.HEADLIGHTS_DIM, value: "NO" },
+        ],
+        next: "starter_tap_test", // Battery seems OK, check starter
+      },
+      {
+        id: "headlights_dim",
+        text: "Dim or weak",
+        observations: [
+          { id: OBSERVATION_IDS.HEADLIGHTS_DIM, value: "YES" },
+        ],
+        next: "battery_terminals", // Battery or connection issue
+      },
+      {
+        id: "headlights_off",
+        text: "Won't turn on at all",
+        observations: [
+          { id: OBSERVATION_IDS.INTERMITTENT_NO_POWER, value: "YES" },
+        ],
+        next: "battery_terminals", // Dead battery or bad connection
       },
     ],
   },
@@ -138,7 +235,6 @@ const ALL_QUESTIONS: Record<string, Question> = {
           { id: OBSERVATION_IDS.INTERMITTENT_NO_POWER, value: "YES" },
         ],
         next: "battery_terminals",
-        canResolve: true,
       },
       {
         id: "lights_work",
@@ -177,16 +273,14 @@ const ALL_QUESTIONS: Record<string, Question> = {
           { id: OBSERVATION_IDS.DASH_RESETS_WHEN_CRANKING, value: "YES" },
         ],
         next: "battery_terminals",
-        canResolve: true,
       },
       {
         id: "battery_warning",
-        text: "Battery warning light was already on",
+        text: "Battery warning light was already on before this",
         observations: [
           { id: OBSERVATION_IDS.BATTERY_LIGHT_ON, value: "YES" },
         ],
-        next: null, // End flow - clear alternator/charging issue
-        canResolve: true,
+        next: "alternator_check",
       },
       {
         id: "lights_normal",
@@ -194,7 +288,7 @@ const ALL_QUESTIONS: Record<string, Question> = {
         observations: [
           { id: OBSERVATION_IDS.HEADLIGHTS_DIM, value: "NO" },
         ],
-        next: "fuel_check",
+        next: "starter_tap_test", // Battery OK, check starter
       },
     ],
   },
@@ -208,15 +302,14 @@ const ALL_QUESTIONS: Record<string, Question> = {
         id: "corroded",
         text: "Yes - I see corrosion buildup",
         observations: [{ id: OBSERVATION_IDS.TERMINALS_CORRODED, value: "YES" }],
-        next: null,
-        canResolve: true,
+        next: "battery_age",
       },
       {
         id: "loose",
         text: "Terminals look loose or disconnected",
         observations: [{ id: OBSERVATION_IDS.TERMINALS_CORRODED, value: "YES" }],
         next: null,
-        canResolve: true,
+        canResolve: true, // Clear answer: fix the connection
       },
       {
         id: "clean",
@@ -241,20 +334,60 @@ const ALL_QUESTIONS: Record<string, Question> = {
         id: "old",
         text: "3+ years old, or I don't know",
         observations: [],
-        next: null,
-        canResolve: true,
+        next: "confirm_battery_symptoms",
+      },
+      {
+        id: "medium",
+        text: "1-3 years old",
+        observations: [],
+        next: "confirm_battery_symptoms",
       },
       {
         id: "new",
-        text: "Less than 2 years old",
+        text: "Less than 1 year old",
         observations: [],
-        next: "alternator_check",
+        next: "alternator_check", // New battery shouldn't die, check charging
       },
       {
         id: "just_replaced",
         text: "Just replaced it recently",
         observations: [],
         next: "battery_terminals", // New battery but issues = bad install
+      },
+    ],
+  },
+
+  // Final confirmation for battery diagnosis
+  confirm_battery_symptoms: {
+    id: "confirm_battery_symptoms",
+    text: "One more check: Before this problem started, did you notice any of these?",
+    options: [
+      {
+        id: "slow_start_before",
+        text: "Car was starting slower than usual lately",
+        observations: [{ id: OBSERVATION_IDS.ENGINE_CRANKS_SLOWLY, value: "YES" }],
+        next: null,
+        canResolve: true, // Classic dying battery
+      },
+      {
+        id: "sits_unused",
+        text: "Car sat unused for a week or more",
+        observations: [],
+        next: null,
+        canResolve: true, // Discharged battery
+      },
+      {
+        id: "lights_left_on",
+        text: "Interior lights or accessories were left on",
+        observations: [],
+        next: null,
+        canResolve: true, // Drained battery
+      },
+      {
+        id: "nothing_unusual",
+        text: "No - everything seemed normal until now",
+        observations: [],
+        next: "alternator_check", // May not be battery after all
       },
     ],
   },
@@ -268,20 +401,27 @@ const ALL_QUESTIONS: Record<string, Question> = {
         text: "Battery light came on while driving",
         observations: [{ id: OBSERVATION_IDS.BATTERY_LIGHT_ON, value: "YES" }],
         next: null,
-        canResolve: true,
+        canResolve: true, // Alternator not charging
       },
       {
         id: "lights_dimming",
-        text: "Headlights were dimming at night",
+        text: "Headlights were dimming at idle or while driving",
         observations: [{ id: OBSERVATION_IDS.HEADLIGHTS_DIM, value: "YES" }],
         next: null,
-        canResolve: true,
+        canResolve: true, // Alternator issue
+      },
+      {
+        id: "electrical_issues",
+        text: "Radio or electronics were acting weird",
+        observations: [{ id: OBSERVATION_IDS.RADIO_RESETS, value: "YES" }],
+        next: null,
+        canResolve: true, // Charging/electrical issue
       },
       {
         id: "nothing_unusual",
         text: "No, everything seemed fine",
         observations: [],
-        next: null,
+        next: "starter_tap_test", // Check starter if electrical seems OK
       },
     ],
   },
@@ -294,14 +434,14 @@ const ALL_QUESTIONS: Record<string, Question> = {
         id: "loud_click",
         text: "A loud CLUNK or CLICK from the engine area",
         observations: [{ id: OBSERVATION_IDS.SINGLE_CLICK_NO_CRANK, value: "YES" }],
-        next: "starter_tap_test",
+        next: "lights_during_click", // Need to check if battery or starter
       },
       {
         id: "grinding",
         text: "A grinding or whirring noise",
         observations: [],
-        next: null, // Likely starter gear issue
-        canResolve: true,
+        next: null,
+        canResolve: true, // Starter gear issue - clear diagnosis
       },
       {
         id: "nothing_starter",
@@ -314,27 +454,55 @@ const ALL_QUESTIONS: Record<string, Question> = {
 
   starter_tap_test: {
     id: "starter_tap_test",
-    text: "Try this: Have someone tap the starter motor with a wrench while you turn the key. Did it start?",
-    subtext: "The starter is usually on the lower side of the engine",
+    text: "Here's a classic test: Can you have someone tap the starter motor with a wrench while you turn the key?",
+    subtext: "The starter is usually on the lower side of the engine - a firm tap, not a hard hit",
     options: [
       {
         id: "tap_worked",
         text: "Yes! It started after tapping",
         observations: [],
         next: null,
-        canResolve: true, // Definitive: bad starter
+        canResolve: true, // Definitive: bad starter motor
       },
       {
         id: "tap_no_change",
-        text: "No change",
+        text: "Tried it - no change",
         observations: [],
-        next: "security_light",
+        next: "starter_history",
       },
       {
         id: "cant_tap",
         text: "I can't do that test right now",
         observations: [],
+        next: "starter_history",
+      },
+    ],
+  },
+
+  // Additional starter questions
+  starter_history: {
+    id: "starter_history",
+    text: "Has starting been inconsistent lately?",
+    subtext: "Sometimes works, sometimes doesn't",
+    options: [
+      {
+        id: "intermittent",
+        text: "Yes - sometimes it starts fine, sometimes it doesn't",
+        observations: [],
         next: null,
+        canResolve: true, // Intermittent = likely starter
+      },
+      {
+        id: "first_failure",
+        text: "No - this is the first time it won't start",
+        observations: [],
+        next: "security_light",
+      },
+      {
+        id: "getting_worse",
+        text: "It's been getting harder to start over time",
+        observations: [{ id: OBSERVATION_IDS.ENGINE_CRANKS_SLOWLY, value: "YES" }],
+        next: "confirm_battery_symptoms",
       },
     ],
   },
@@ -342,13 +510,20 @@ const ALL_QUESTIONS: Record<string, Question> = {
   security_light: {
     id: "security_light",
     text: "Is there a security/key/immobilizer light flashing on the dashboard?",
+    subtext: "Look for a key symbol, lock symbol, or car with a key inside it",
     options: [
       {
         id: "security_on",
         text: "Yes - there's a key or lock symbol flashing",
         observations: [],
-        next: null, // Security system issue
-        canResolve: true,
+        next: null,
+        canResolve: true, // Security system issue
+      },
+      {
+        id: "security_solid",
+        text: "There's a key symbol but it's solid, not flashing",
+        observations: [],
+        next: "fuel_check",
       },
       {
         id: "security_off",
