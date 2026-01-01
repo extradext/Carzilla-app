@@ -40,8 +40,6 @@ type AnswerOption = {
   next?: string | null;
   // If true, this answer provides enough info to potentially end the flow
   canResolve?: boolean;
-  // Override engine's hypothesis with this definitive answer
-  definitiveHypothesis?: string;
 };
 
 type Question = {
