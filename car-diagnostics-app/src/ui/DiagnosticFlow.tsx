@@ -1592,7 +1592,7 @@ const ENTRY_ANCHOR_INFO: Record<EntryAnchor, { title: string; description: strin
   },
 };
 
-export function DiagnosticFlow({ vehicleId, onResult }: DiagnosticFlowProps) {
+export function DiagnosticFlow({ vehicleId, onResult, excludedHypotheses = [], onClearExclusions }: DiagnosticFlowProps) {
   const [step, setStep] = useState<FlowStep>("entry");
   const [entryAnchor, setEntryAnchor] = useState<EntryAnchor | null>(null);
   const [currentQuestionId, setCurrentQuestionId] = useState<string | null>(null);
