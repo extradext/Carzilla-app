@@ -129,7 +129,8 @@ export function runDiagnosticEngine(input: DiagnosticEngineInput): DiagnosticEng
   // 1) Top hypothesis selection (engine-level orchestration rule)
   // Choose the family with the highest absolute score.
   // Deterministic tie-break: iteration order.
-  const topHypothesis = selectTopHypothesis(scores);
+  // Pro feature: Exclude specified hypotheses
+  const topHypothesis = selectTopHypothesis(scores, input.excludedHypotheses);
 
   // NOTE: The current model types define `id` and `topHypothesis` as string.
   // This engine revision must return nulls when missing per requirement, so we cast.
