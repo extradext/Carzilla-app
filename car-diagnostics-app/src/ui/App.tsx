@@ -3,65 +3,201 @@
  * PRESENTATION ONLY (per file contracts)
  *
  * Consumes engine outputs. Must not contain scoring/safety logic.
+ * 
+ * Panel Structure:
+ * - Top: Vehicle selector
+ * - Panels: Diagnose, Results, My Garage, Tips & Tricks, Settings
  */
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import type { DiagnosticResult } from "../models/diagnosticResult";
+import type { Vehicle } from "../models/vehicle";
 import { DiagnosticFlow } from "./DiagnosticFlow";
 import { Results } from "./Results";
-import { VehicleProfiles } from "./VehicleProfiles";
-import { Maintenance } from "./Maintenance";
+import { VehicleSelector, VehicleProfiles } from "./VehicleProfiles";
+import { MyGarage } from "./MyGarage";
+import { TipsAndTricks } from "./TipsAndTricks";
 import { Settings } from "./Settings";
+import { isSafetyAcknowledged, setSafetyAcknowledged } from "../storage/localStore";
 
-type Tab = "diagnose" | "results" | "vehicles" | "maintenance" | "settings";
+type Tab = "diagnose" | "results" | "garage" | "tips" | "vehicles" | "settings";
 
 export function App() {
   const [tab, setTab] = useState<Tab>("diagnose");
   const [lastResult, setLastResult] = useState<DiagnosticResult | null>(null);
+  const [activeVehicle, setActiveVehicle] = useState<Vehicle | null>(null);
+  const [showSafetyDisclaimer, setShowSafetyDisclaimer] = useState(false);
+  const [diagnosticAnswers, setDiagnosticAnswers] = useState<Record<string, string>>({});
+
+  // Check safety disclaimer on launch
+  useEffect(() => {
+    if (!isSafetyAcknowledged()) {
+      setShowSafetyDisclaimer(true);
+    }
+  }, []);
+
+  const handleSafetyAcknowledge = () => {
+    setSafetyAcknowledged();
+    setShowSafetyDisclaimer(false);
+  };
+
+  const handleVehicleChange = (vehicle: Vehicle | null) => {
+    setActiveVehicle(vehicle);
+    // Clear result when switching vehicles
+    setLastResult(null);
+    setDiagnosticAnswers({});
+  };
+
+  const handleDiagnosticResult = (result: DiagnosticResult, answers: Record<string, string>) => {
+    setLastResult(result);
+    setDiagnosticAnswers(answers);
+    setTab("results");
+  };
 
   return (
     <div className="container" data-testid="app-shell">
-      <header className="row" style={{ alignItems: "center", justifyContent: "space-between" }}>
-        <div>
-          <h1 style={{ margin: 0 }} data-testid="app-title">
-            Car Diagnostics (Scaffold)
-          </h1>
-          <div className="badge" data-testid="app-subtitle">
-            No diagnostic logic implemented
+      {/* Safety Disclaimer Modal - One time on app launch */}
+      {showSafetyDisclaimer && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0,0,0,0.9)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 2000,
+          }}
+          data-testid="safety-disclaimer"
+        >
+          <div className="card" style={{ maxWidth: 500, textAlign: "center" }}>
+            <h2 style={{ marginTop: 0, color: "#ffd700" }}>⚠️ Safety Notice</h2>
+            <p style={{ fontSize: 18, margin: "20px 0" }}>
+              Use diagnostics only while the vehicle is stationary.
+            </p>
+            <p style={{ opacity: 0.8 }}>
+              Never attempt to diagnose or inspect your vehicle while driving or with the engine
+              running unless specifically instructed by a professional.
+            </p>
+            <button
+              className="button"
+              onClick={handleSafetyAcknowledge}
+              style={{ marginTop: 20, padding: "12px 32px", fontSize: 16 }}
+              data-testid="safety-acknowledge-btn"
+            >
+              I Understand
+            </button>
           </div>
         </div>
+      )}
 
+      <header style={{ marginBottom: 20 }}>
+        {/* Top: Vehicle Selector */}
+        <div
+          className="row"
+          style={{ alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}
+        >
+          <div>
+            <h1 style={{ margin: 0 }} data-testid="app-title">
+              Car Diagnostics
+            </h1>
+          </div>
+          <VehicleSelector onVehicleChange={handleVehicleChange} />
+        </div>
+
+        {/* Navigation Tabs */}
         <nav className="row" data-testid="app-nav">
-          <button className="button" data-testid="nav-diagnose" onClick={() => setTab("diagnose")}>Diagnose</button>
-          <button className="button" data-testid="nav-results" onClick={() => setTab("results")}>Results</button>
-          <button className="button" data-testid="nav-vehicles" onClick={() => setTab("vehicles")}>Vehicles</button>
-          <button className="button" data-testid="nav-maintenance" onClick={() => setTab("maintenance")}>Maintenance</button>
-          <button className="button" data-testid="nav-settings" onClick={() => setTab("settings")}>Settings</button>
+          <button
+            className="button"
+            data-testid="nav-diagnose"
+            onClick={() => setTab("diagnose")}
+            style={tab === "diagnose" ? { background: "rgba(255,255,255,0.2)" } : {}}
+          >
+            Diagnose
+          </button>
+          <button
+            className="button"
+            data-testid="nav-results"
+            onClick={() => setTab("results")}
+            style={tab === "results" ? { background: "rgba(255,255,255,0.2)" } : {}}
+          >
+            Results
+          </button>
+          <button
+            className="button"
+            data-testid="nav-garage"
+            onClick={() => setTab("garage")}
+            style={tab === "garage" ? { background: "rgba(255,255,255,0.2)" } : {}}
+          >
+            My Garage
+          </button>
+          <button
+            className="button"
+            data-testid="nav-tips"
+            onClick={() => setTab("tips")}
+            style={tab === "tips" ? { background: "rgba(255,255,255,0.2)" } : {}}
+          >
+            Tips & Tricks
+          </button>
+          <button
+            className="button"
+            data-testid="nav-vehicles"
+            onClick={() => setTab("vehicles")}
+            style={tab === "vehicles" ? { background: "rgba(255,255,255,0.2)" } : {}}
+          >
+            Vehicles
+          </button>
+          <button
+            className="button"
+            data-testid="nav-settings"
+            onClick={() => setTab("settings")}
+            style={tab === "settings" ? { background: "rgba(255,255,255,0.2)" } : {}}
+          >
+            Settings
+          </button>
         </nav>
       </header>
 
-      <main style={{ marginTop: 18 }} data-testid="app-main">
+      <main data-testid="app-main">
         {tab === "diagnose" && (
           <DiagnosticFlow
-            onResult={(result) => {
-              setLastResult(result);
-            }}
+            vehicleId={activeVehicle?.id ?? null}
+            onResult={handleDiagnosticResult}
           />
         )}
-        {tab === "results" && lastResult && <Results result={lastResult} />}
+
+        {tab === "results" && lastResult && (
+          <Results
+            result={lastResult}
+            vehicleId={activeVehicle?.id ?? null}
+            vehicle={activeVehicle}
+            diagnosticAnswers={diagnosticAnswers}
+            onBackToFlow={() => setTab("diagnose")}
+          />
+        )}
         {tab === "results" && !lastResult && (
           <div className="card" data-testid="results-empty">
-            No results yet.
+            <h2 style={{ marginTop: 0 }}>Results</h2>
+            <p>No diagnostic results yet. Run a diagnosis to see results here.</p>
+            <button className="button" onClick={() => setTab("diagnose")}>
+              Start Diagnosis
+            </button>
           </div>
         )}
-        {tab === "vehicles" && <VehicleProfiles />}
-        {tab === "maintenance" && <Maintenance />}
+
+        {tab === "garage" && (
+          <MyGarage vehicleId={activeVehicle?.id ?? null} vehicleName={activeVehicle?.nickname} />
+        )}
+
+        {tab === "tips" && <TipsAndTricks />}
+
+        {tab === "vehicles" && <VehicleProfiles onVehicleChange={handleVehicleChange} />}
+
         {tab === "settings" && <Settings />}
       </main>
-
-      <footer style={{ marginTop: 20, opacity: 0.8 }} data-testid="app-footer">
-        TODO: Wire /storage for persistence and /engine for orchestration.
-      </footer>
     </div>
   );
 }
