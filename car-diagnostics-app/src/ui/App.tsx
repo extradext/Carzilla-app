@@ -9,7 +9,7 @@
  * - Panels: Diagnose, Results, My Garage, Tips & Tricks, Settings
  */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import type { DiagnosticResult } from "../models/diagnosticResult";
 import type { Vehicle } from "../models/vehicle";
 import { DiagnosticFlow } from "./DiagnosticFlow";
@@ -18,7 +18,7 @@ import { VehicleSelector, VehicleProfiles } from "./VehicleProfiles";
 import { MyGarage } from "./MyGarage";
 import { TipsAndTricks } from "./TipsAndTricks";
 import { Settings } from "./Settings";
-import { isSafetyAcknowledged, setSafetyAcknowledged } from "../storage/localStore";
+import { isSafetyAcknowledged, setSafetyAcknowledged, getVehicles, getActiveVehicle } from "../storage/localStore";
 
 type Tab = "diagnose" | "results" | "garage" | "tips" | "vehicles" | "settings";
 
