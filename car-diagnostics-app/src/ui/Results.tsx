@@ -28,6 +28,7 @@ import {
 import { exportDiagnosticPayload, createFeedbackPayload } from "../utils/export";
 import { HYPOTHESIS_FAMILY_LABELS, type HypothesisFamilyId } from "../diagnostics/hypothesisFamilies";
 import { getVerificationGuide, type VerificationGuide } from "../content/verificationGuides";
+import { getEasyChecksArray } from "../content/easyChecks";
 
 // Detailed hypothesis information with descriptions and related possibilities
 type HypothesisInfo = {
