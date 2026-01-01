@@ -8,7 +8,7 @@
  * - Supporting engine signals
  * - Garage Integration (references notes/maintenance)
  * - Save to Garage / Export options
- * - "I think it's something else" button
+ * - "I think it's something else" button (Pro: re-run excluding)
  */
 
 import React, { useState, useEffect } from "react";
@@ -21,6 +21,7 @@ import {
   getGarageNotes,
   getMaintenanceEvents,
   getActiveVehicle,
+  isProEnabled,
 } from "../storage/localStore";
 import { exportDiagnosticPayload, createFeedbackPayload } from "../utils/export";
 
@@ -29,7 +30,10 @@ type ResultsProps = {
   vehicleId: string | null;
   vehicle?: Vehicle | null;
   diagnosticAnswers?: Record<string, string>;
+  excludedHypotheses?: string[];
   onBackToFlow?: () => void;
+  onRerunExcluding?: (hypothesis: string) => void;
+  onStartFresh?: () => void;
 };
 
 export function Results({
@@ -37,13 +41,22 @@ export function Results({
   vehicleId,
   vehicle,
   diagnosticAnswers = {},
+  excludedHypotheses = [],
   onBackToFlow,
+  onRerunExcluding,
+  onStartFresh,
 }: ResultsProps) {
   const [saved, setSaved] = useState(false);
   const [showFeedbackOptions, setShowFeedbackOptions] = useState(false);
   const [userNotes, setUserNotes] = useState("");
   const [relevantNotes, setRelevantNotes] = useState<GarageNote[]>([]);
   const [relevantMaintenance, setRelevantMaintenance] = useState<MaintenanceEvent[]>([]);
+  const [proEnabled, setProEnabled] = useState(false);
+
+  // Check Pro status
+  useEffect(() => {
+    setProEnabled(isProEnabled());
+  }, []);
 
   // Load relevant garage data
   useEffect(() => {
@@ -112,34 +125,32 @@ export function Results({
     URL.revokeObjectURL(url);
   };
 
-  // Handle feedback options
-  const handleFeedback = (type: "rerun_excluding" | "submit_feedback") => {
+  // Handle re-run excluding (Pro feature)
+  const handleRerunExcluding = () => {
+    if (result.topHypothesis && onRerunExcluding) {
+      onRerunExcluding(result.topHypothesis);
+    }
+  };
+
+  // Handle feedback submission
+  const handleSubmitFeedback = () => {
     const activeVehicle = vehicle || (vehicleId ? getActiveVehicle() : null);
     const payload = createFeedbackPayload(
       result,
-      type,
+      "submit_feedback",
       userNotes || undefined,
       activeVehicle || undefined,
       diagnosticAnswers
     );
 
-    if (type === "submit_feedback") {
-      // For now, download the feedback payload
-      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `feedback-${result.id?.slice(0, 8) || "result"}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-      setShowFeedbackOptions(false);
-    } else {
-      // Re-run excluding - TODO: implement in future
-      alert(
-        "Re-run excluding this hypothesis is a Pro feature coming soon.\n\nYour feedback has been noted."
-      );
-      setShowFeedbackOptions(false);
-    }
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `feedback-${result.id?.slice(0, 8) || "result"}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setShowFeedbackOptions(false);
   };
 
   return (
@@ -166,6 +177,38 @@ export function Results({
           </button>
         )}
       </div>
+
+      {/* Show excluded hypotheses if re-running */}
+      {excludedHypotheses.length > 0 && (
+        <div
+          style={{
+            marginBottom: 16,
+            padding: 12,
+            background: "rgba(255,200,50,0.15)",
+            borderRadius: 8,
+            border: "1px solid rgba(255,200,50,0.3)",
+          }}
+          data-testid="exclusions-banner"
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div>
+              <strong>⭐ Pro: Re-run Results</strong>
+              <p style={{ margin: "4px 0 0", fontSize: 14, opacity: 0.9 }}>
+                Excluded from consideration: {excludedHypotheses.join(", ")}
+              </p>
+            </div>
+            {onStartFresh && (
+              <button
+                className="button"
+                onClick={onStartFresh}
+                style={{ padding: "6px 12px", fontSize: 13 }}
+              >
+                Start Fresh
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Top Hypothesis */}
       <div
@@ -194,6 +237,11 @@ export function Results({
         <div className="badge" style={{ padding: "8px 16px" }}>
           Entry: {result.entryAnchor.replace(/_/g, " ")}
         </div>
+        {proEnabled && (
+          <div className="badge" style={{ padding: "8px 16px", background: "rgba(255,200,50,0.3)" }}>
+            ⭐ Pro
+          </div>
+        )}
       </div>
 
       {/* Confidence explanation */}
@@ -374,24 +422,47 @@ export function Results({
             data-testid="feedback-options"
           >
             <p style={{ marginTop: 0, opacity: 0.8 }}>
-              If you believe the diagnosis is incorrect, you can:
+              If you believe the diagnosis is incorrect:
             </p>
             <div style={{ display: "grid", gap: 8 }}>
+              {/* Re-run excluding - Pro feature */}
               <button
                 className="button"
-                onClick={() => handleFeedback("rerun_excluding")}
-                style={{ textAlign: "left", padding: "12px" }}
+                onClick={proEnabled ? handleRerunExcluding : undefined}
+                style={{
+                  textAlign: "left",
+                  padding: "12px",
+                  opacity: proEnabled ? 1 : 0.6,
+                  cursor: proEnabled ? "pointer" : "not-allowed",
+                }}
                 data-testid="rerun-excluding-btn"
               >
-                <strong>Re-run excluding this hypothesis</strong>
-                <br />
-                <span style={{ opacity: 0.7, fontSize: 13 }}>
-                  Temporarily exclude "{result.topHypothesis}" and re-diagnose
-                </span>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div>
+                    <strong>Re-run excluding "{result.topHypothesis}"</strong>
+                    <br />
+                    <span style={{ opacity: 0.7, fontSize: 13 }}>
+                      Run diagnosis again without considering this hypothesis
+                    </span>
+                  </div>
+                  {proEnabled ? (
+                    <span className="badge" style={{ background: "rgba(255,200,50,0.3)" }}>⭐ Pro</span>
+                  ) : (
+                    <span className="badge" style={{ background: "rgba(255,255,255,0.1)" }}>
+                      Pro Only
+                    </span>
+                  )}
+                </div>
+                {!proEnabled && (
+                  <p style={{ margin: "8px 0 0", fontSize: 12, opacity: 0.7 }}>
+                    Enable Pro Mode in Settings to use this feature
+                  </p>
+                )}
               </button>
+
               <button
                 className="button"
-                onClick={() => handleFeedback("submit_feedback")}
+                onClick={handleSubmitFeedback}
                 style={{ textAlign: "left", padding: "12px" }}
                 data-testid="submit-feedback-btn"
               >
