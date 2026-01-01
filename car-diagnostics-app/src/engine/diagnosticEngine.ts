@@ -44,13 +44,21 @@ export type DiagnosticEngineOutput = {
   scores?: Record<string, number>;
 };
 
-function selectTopHypothesis(scores: Record<string, number>): string | null {
+function selectTopHypothesis(scores: Record<string, number>, excludedHypotheses: string[] = []): string | null {
   // Choose the family with the highest absolute score.
   // Deterministic tie-break: iteration order (Object.entries order).
+  // Pro feature: Skip excluded hypotheses
   let bestFamily: string | null = null;
   let bestAbs = 0;
 
+  const excludedLower = excludedHypotheses.map(h => h.toLowerCase());
+
   for (const [family, score] of Object.entries(scores)) {
+    // Skip excluded hypotheses (case-insensitive comparison)
+    if (excludedLower.includes(family.toLowerCase())) {
+      continue;
+    }
+    
     const abs = Math.abs(typeof score === "number" ? score : 0);
     if (abs > bestAbs) {
       bestAbs = abs;
