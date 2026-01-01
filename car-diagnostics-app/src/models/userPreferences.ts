@@ -7,4 +7,5 @@ export type UserPreferences = {
   notificationsEnabled: boolean;
   oilReminder: boolean;
   seasonalReminders: boolean;
+  proEnabled: boolean;
 };
