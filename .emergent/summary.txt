@@ -1,0 +1,161 @@
+<analysis>
+🚗 Car Diagnostics App — Authoritative Fork Handoff (Garage-Centric)
+original_problem_statement
+The user is building a deterministic, rule-based Car Diagnostics App with a locked architecture.
+The agent’s role is strictly builder, not designer.
+All diagnostic logic already exists and is immutable.
+This fork resets the UX foundation to eliminate entropy and restore a clean, progressive diagnostic flow.
+🔒 Core Constraints (Unchanged)
+DO NOT modify:
+/src/core/*
+/src/diagnostics/*
+No new diagnostic logic
+No inferred rules
+UI never decides outcomes
+Engine is the sole authority
+If unclear → leave TODO, do not guess
+✅ What Exists at Fork Start
+Fully implemented diagnostic engine
+Immutable scoring, confidence, and rule system
+Engine → UI wiring proven functional
+Vehicle profile model exists
+Local-first architecture (no backend)
+❌ What Is Explicitly Removed
+❌ Observations system
+❌ Observations tab
+❌ Observations affecting diagnostic flow
+❌ Single-question / dropdown diagnosis
+❌ Safety hard stops, acknowledgments, or panels
+❌ Standalone Maintenance panel
+These are not to be rebuilt.
+🚘 Vehicle Profiles (Hard Gate)
+Vehicle selector lives at the top of the app
+Tap to:
+Select existing profile
+Create new profile
+Delete profile
+Profile requires:
+Name
+Make
+Model
+Switching profiles swaps all visible data:
+Garage content
+Saved diagnostics
+Notes
+Maintenance
+No other controls in the selector.
+🧰 My Garage (Primary Data Container)
+My Garage replaces Observations, Maintenance, and History.
+It contains internal tabs:
+1️⃣ Notes / Memory
+User-entered notes about what they:
+heard
+saw
+felt
+smelled
+Optional metadata:
+date noticed
+intermittent / constant
+conditions (driving, weather, temp, fuel level)
+Notes:
+do NOT affect diagnostics
+can be edited, deleted, or marked resolved
+Used only as contextual references at results time
+2️⃣ Maintenance
+Oil changes
+Brakes
+Component replacements
+Mileage entries
+Countdown / reminders allowed
+No separate Maintenance panel
+3️⃣ Saved Diagnostics
+Completed diagnoses can be:
+saved
+exported
+Saved results appear here per vehicle
+Switching vehicles swaps diagnostic history
+🔁 Diagnostic Flow (Restored & Deterministic)
+How the flow starts
+User taps “Diagnose”
+Flow begins with the first diagnostic question
+No “Run Diagnosis” button
+No observation pre-selection
+Flow behavior
+Progressive, multi-step elimination
+Questions are contextual and sequential
+Yes / No / Unsure answers
+No single-question conclusions
+No random or dropdown diagnosis
+Navigation
+Back arrow:
+returns to previous question
+works from Results back into the flow
+Start Over:
+resets the current diagnostic session only
+does NOT delete Garage data or vehicle info
+⚠️ Safety (Minimal & Non-Disruptive)
+One app-launch disclaimer only:
+“Use diagnostics only while the vehicle is stationary.”
+No safety panels
+No acknowledgments
+No flow interruption
+📊 Results (Integrated with Garage)
+Results display:
+Top hypothesis
+Confidence band
+Supporting engine signals
+Garage linkage
+Results may reference:
+relevant Notes
+relevant Maintenance history
+References are informational only
+Results can be:
+saved to Garage
+exported
+🔄 Post-Result Actions
+Button: “I think it’s something else”
+Dropdown options:
+Re-run diagnosis excluding current top hypothesis (temporary)
+Submit feedback to developer
+Feedback / Export payload includes:
+Vehicle info
+Diagnostic answers
+Result
+User notes
+Payload must be:
+usable in V1
+forward-compatible with V2
+💰 Pro Features (Unchanged)
+Known-good component-level exclusions only
+(battery, alternator, caliper, fuel pump, etc.)
+Per-run only
+Warning required:
+“May reduce accuracy or cause misdiagnosis.”
+No system-level exclusions
+No safety-critical components
+🧭 Final Panel Structure
+Top:
+Vehicle selector
+Panels:
+Diagnose
+Results
+My Garage
+Tips & Tricks
+Settings
+🛑 Execution Order (Strict)
+Remove observations entirely
+Collapse Maintenance into My Garage
+Add Saved Diagnostics tab
+Restore deterministic question flow
+Implement Back + Start Over navigation
+Link Results ↔ Garage context
+Add post-result actions
+Add Pro controls
+Polish only
+Role Reminder (Critical)
+You are a builder.
+Do not redesign.
+Do not simplify.
+Do not invent.
+If something feels “missing,” leave a TODO and continue.
+</analysis>
