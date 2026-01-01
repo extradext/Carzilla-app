@@ -464,7 +464,8 @@ const ALL_QUESTIONS: Record<string, Question> = {
         text: "Yes! It started after tapping",
         observations: [],
         next: null,
-        canResolve: true, // Definitive: bad starter motor
+        canResolve: true,
+        definitiveHypothesis: "starter", // Override engine - definitive starter diagnosis
       },
       {
         id: "tap_no_change",
