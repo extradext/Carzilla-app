@@ -10,6 +10,7 @@
  * - Garage Integration (references notes/maintenance)
  * - Save to Garage / Export options
  * - "I think it's something else" button (Pro: re-run excluding)
+ * - How to check / verify guides (when available)
  */
 
 import React, { useState, useEffect } from "react";
@@ -26,6 +27,7 @@ import {
 } from "../storage/localStore";
 import { exportDiagnosticPayload, createFeedbackPayload } from "../utils/export";
 import { HYPOTHESIS_FAMILY_LABELS, type HypothesisFamilyId } from "../diagnostics/hypothesisFamilies";
+import { getVerificationGuide, type VerificationGuide } from "../content/verificationGuides";
 
 // Detailed hypothesis information with descriptions and related possibilities
 type HypothesisInfo = {
