@@ -3,11 +3,38 @@
  * PRESENTATION ONLY
  */
 
-import React from 'react';
-import { TIPS } from '../content/tips';
+import React, { useState } from 'react';
+import { TIPS, type TipCategory, type Tip } from '../content/tips';
 import { FAQ } from '../content/faq';
 
+const CATEGORY_LABELS: Record<TipCategory, string> = {
+  brakes: "🛑 Brakes",
+  electrical: "🔋 Electrical",
+  engine: "🔧 Engine",
+  general: "📋 General",
+  tires: "🚗 Tires & Wheels",
+};
+
+const CATEGORY_ORDER: TipCategory[] = ["brakes", "electrical", "engine", "tires", "general"];
+
+function groupTipsByCategory(tips: Tip[]): Record<TipCategory, Tip[]> {
+  const grouped: Record<TipCategory, Tip[]> = {
+    brakes: [],
+    electrical: [],
+    engine: [],
+    general: [],
+    tires: [],
+  };
+  tips.forEach((tip) => {
+    grouped[tip.category].push(tip);
+  });
+  return grouped;
+}
+
 export function TipsAndTricks() {
+  const [expandedTip, setExpandedTip] = useState<string | null>(null);
+  const groupedTips = groupTipsByCategory(TIPS);
+
   return (
     <section className="card" data-testid="tips-panel">
       <h2 style={{ marginTop: 0 }} data-testid="tips-title">
@@ -20,13 +47,42 @@ export function TipsAndTricks() {
 
       {TIPS.length > 0 && (
         <div data-testid="tips-list">
-          <h3>Troubleshooting Tips</h3>
-          {TIPS.map((tip) => (
-            <div key={tip.id} className="card" style={{ marginBottom: 8, background: 'rgba(255,255,255,0.04)' }}>
-              <h4 style={{ margin: '0 0 8px' }}>{tip.title}</h4>
-              <p style={{ margin: 0, opacity: 0.9 }}>{tip.body}</p>
-            </div>
-          ))}
+          {CATEGORY_ORDER.map((category) => {
+            const categoryTips = groupedTips[category];
+            if (categoryTips.length === 0) return null;
+            return (
+              <div key={category} style={{ marginBottom: 16 }}>
+                <h3 style={{ marginBottom: 8, borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: 4 }}>
+                  {CATEGORY_LABELS[category]}
+                </h3>
+                {categoryTips.map((tip) => (
+                  <details
+                    key={tip.id}
+                    open={expandedTip === tip.id}
+                    style={{
+                      marginBottom: 8,
+                      background: 'rgba(255,255,255,0.04)',
+                      borderRadius: 8,
+                      padding: '8px 12px',
+                    }}
+                  >
+                    <summary
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setExpandedTip(expandedTip === tip.id ? null : tip.id);
+                      }}
+                      style={{ cursor: 'pointer', fontWeight: 500, listStyle: 'none' }}
+                    >
+                      {expandedTip === tip.id ? '▼' : '▶'} {tip.title}
+                    </summary>
+                    <div style={{ marginTop: 8, opacity: 0.9, whiteSpace: 'pre-line', lineHeight: 1.5 }}>
+                      {tip.body}
+                    </div>
+                  </details>
+                ))}
+              </div>
+            );
+          })}
         </div>
       )}
 
@@ -43,7 +99,7 @@ export function TipsAndTricks() {
       )}
 
       <div style={{ marginTop: 20, padding: 12, background: 'rgba(255,200,100,0.1)', borderRadius: 8 }}>
-        <strong>General Tips:</strong>
+        <strong>General Diagnostic Tips:</strong>
         <ul style={{ margin: '8px 0 0', paddingLeft: 20 }}>
           <li>Always note when symptoms occur (cold start, while driving, after warming up)</li>
           <li>Document any recent changes or work done to the vehicle</li>
