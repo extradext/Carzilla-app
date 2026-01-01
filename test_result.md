@@ -79,3 +79,48 @@ InfoText displays beneath questions with relevant guidance:
 - **Confidence:** 60% (Medium) - Appropriately modest ✅
 - **Secondary:** Battery/Charging System correctly shown in "Also Consider" ✅
 - **Core Principle Verified:** Confidence capped by remaining uncertainty, not boosted by hypothesis strength
+
+## Brake Fluid Logic Upgrade - PASSED ✅
+- Date: 2026-01-01
+- Implementation: ENGINE-DATA OPTION (A) - Observations + Component Refinements
+
+### Files Modified:
+1. `/src/core/observations.ts` - Added 6 new observations:
+   - `brake_pedal_sinks`, `brake_fluid_level_low`, `brake_fluid_level_normal`
+   - `recent_brake_service`, `visible_fluid_under_car`, `visible_fluid_near_wheel`
+
+2. `/src/diagnostics/rules.ts` - Added observation→family mappings
+
+3. `/src/engine/diagnosticEngine.ts` - Added 15 component refinement rules:
+   - Master cylinder internal bypass
+   - Air in brake lines
+   - Brake fluid leak (general)
+   - Brake fluid leak (caliper/hose area)
+   - Updated pad/rotor/caliper rules
+
+4. `/src/ui/Results.tsx` - Added 5 new component details + educational section
+
+5. `/src/ui/DiagnosticFlow.tsx` - Added 5 new brake questions:
+   - Pedal sink check, Fluid level check, Recent service check
+   - Visible fluid under car, Visible fluid near wheel
+   - Added Copy Block A (educational tip)
+
+6. `/src/content/tips.ts` - Added 9 educational tips (brakes, electrical, general)
+
+7. `/src/ui/TipsAndTricks.tsx` - Added category-based tip display
+
+8. `/src/ui/MyGarage.tsx` - Added Copy Block D tip + brake maintenance types
+
+### Test Cases Verified:
+| Test Case | Input | Expected Result | Actual Result | Status |
+|-----------|-------|-----------------|---------------|--------|
+| 4. Pedal sinks + normal fluid | Spongy→Sinks→Normal fluid→No service→No leaks | Master Cylinder Internal | ✅ Master Cylinder (Internal Bypass) | PASSED |
+| 5. Visible wetness near wheel | Spongy→Holds→Low fluid→No service→Wet near wheel | Leak at caliper/hose | ✅ Brake Fluid Leak (Caliper/Hose Area) | PASSED |
+| 3. Recent service + spongy + normal | Spongy→Holds→Normal fluid→Recent service→No leaks | Air in lines | ✅ Air in Brake Lines | PASSED |
+
+### Scope Compliance:
+- ✅ Did NOT change scoring math/weights in /src/core/scoring.ts
+- ✅ Did NOT add invented heuristics outside observation-driven mapping
+- ✅ Used observations + mapping rather than altering algorithms
+- ✅ UI does not decide outcomes - only collects inputs & displays engine outputs
+- ✅ Safety UX remains advisory only
