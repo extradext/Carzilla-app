@@ -1926,7 +1926,6 @@ export function DiagnosticFlow({ vehicleId, onResult, excludedHypotheses = [], o
   const [questionHistory, setQuestionHistory] = useState<string[]>([]);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [observations, setObservations] = useState<ObservationResponse[]>([]);
-  const [definitiveHypothesis, setDefinitiveHypothesis] = useState<string | null>(null);
 
   const currentQuestion = currentQuestionId ? ALL_QUESTIONS[currentQuestionId] : null;
 
@@ -1939,7 +1938,6 @@ export function DiagnosticFlow({ vehicleId, onResult, excludedHypotheses = [], o
     setQuestionHistory([startQuestion]);
     setAnswers({});
     setObservations([]);
-    setDefinitiveHypothesis(null);
   };
 
   // Handle answer selection
@@ -1949,12 +1947,6 @@ export function DiagnosticFlow({ vehicleId, onResult, excludedHypotheses = [], o
     // Record the answer
     const newAnswers = { ...answers, [currentQuestionId]: option.id };
     setAnswers(newAnswers);
-
-    // Check for definitive hypothesis override
-    const newDefinitive = option.definitiveHypothesis || definitiveHypothesis;
-    if (option.definitiveHypothesis) {
-      setDefinitiveHypothesis(option.definitiveHypothesis);
-    }
 
     // Add observations from this answer
     const newObservations = [...observations];
@@ -1978,7 +1970,7 @@ export function DiagnosticFlow({ vehicleId, onResult, excludedHypotheses = [], o
     if (option.next === null || option.canResolve) {
       // Check if we should end the flow
       if (option.canResolve || option.next === null) {
-        runDiagnosis(newObservations, newAnswers, newDefinitive);
+        runDiagnosis(newObservations, newAnswers);
         return;
       }
     }
@@ -1989,7 +1981,7 @@ export function DiagnosticFlow({ vehicleId, onResult, excludedHypotheses = [], o
       setQuestionHistory([...questionHistory, option.next]);
     } else {
       // No more questions - run diagnosis
-      runDiagnosis(newObservations, newAnswers, newDefinitive);
+      runDiagnosis(newObservations, newAnswers);
     }
   };
 
