@@ -1534,6 +1534,37 @@ export function Results({
           "The diagnosis has low confidence. More information may be needed for a reliable diagnosis."}
       </p>
 
+      {/* Educational Context - Brake Fluid Related Results */}
+      {(result.topHypothesis === "brakes_heat_drag" || 
+        result.specificComponent?.includes("brake") || 
+        result.specificComponent?.includes("master_cylinder") ||
+        result.specificComponent?.includes("air_in")) && (
+        <details
+          style={{
+            marginBottom: 16,
+            padding: 12,
+            background: "rgba(100,150,255,0.08)",
+            borderRadius: 8,
+            border: "1px solid rgba(100,150,255,0.2)",
+          }}
+        >
+          <summary style={{ cursor: "pointer", fontWeight: 500, fontSize: 14 }}>
+            💡 Understanding Brake Fluid Diagnosis
+          </summary>
+          <div style={{ marginTop: 12, opacity: 0.85, lineHeight: 1.6, fontSize: 14 }}>
+            <p style={{ margin: "0 0 12px" }}>
+              Brake fluid level is a <strong>clue</strong>, not a diagnosis by itself. Low fluid can mean 
+              worn pads OR a leak. If your pedal feels spongy/soft, the level is dropping quickly, or you 
+              see wetness near a wheel, a leak becomes much more likely.
+            </p>
+            <p style={{ margin: 0 }}>
+              <strong>Important:</strong> Brake fluid doesn't normally "get used up." If it's low, investigate 
+              the cause before simply topping it off.
+            </p>
+          </div>
+        </details>
+      )}
+
       {/* Safety Notes */}
       {Array.isArray(result.safetyNotes) && result.safetyNotes.length > 0 && (
         <div
