@@ -75,6 +75,12 @@ function applyBatteryBiasCorrection(
   
   let batteryPenalty = 0;
   
+  // If engine cranks at NORMAL speed → battery has enough power, rule it out
+  // This is a STRONG indicator that battery is NOT the problem
+  if (hasNo(OBSERVATION_IDS.ENGINE_CRANKS_SLOWLY)) {
+    batteryPenalty += 0.6; // Strong penalty - normal crank speed = battery is fine
+  }
+  
   // If headlights are NOT dim (bright at rest) → reduce battery confidence
   if (hasNo(OBSERVATION_IDS.HEADLIGHTS_DIM)) {
     batteryPenalty += 0.3;
