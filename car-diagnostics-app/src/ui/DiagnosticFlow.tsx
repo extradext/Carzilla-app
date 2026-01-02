@@ -2583,7 +2583,7 @@ export function DiagnosticFlow({ vehicleId, onResult, excludedHypotheses = [], o
               }}
               data-testid={`entry-${anchor}`}
             >
-              <span style={{ fontSize: 28 }}>{info.icon}</span>
+              <EntryAnchorIcon iconType={info.iconType} size={28} />
               <div>
                 <strong style={{ fontSize: 16 }}>{info.title}</strong>
                 <br />
