@@ -21,6 +21,18 @@ import {
   type ObservationResponse,
 } from "../core/observations";
 import { generateUUID } from "../utils/uuid";
+import {
+  Key,
+  Activity,
+  Disc,
+  Thermometer,
+  Volume2,
+  AlertCircle,
+  TipIcon,
+  SearchIcon,
+  WarningIcon,
+  CarIcon,
+} from "./icons";
 
 type DiagnosticFlowProps = {
   vehicleId: string | null;
