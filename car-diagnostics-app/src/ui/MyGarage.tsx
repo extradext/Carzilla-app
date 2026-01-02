@@ -439,7 +439,7 @@ function MaintenanceTab({ vehicleId }: { vehicleId: string }) {
         border: '1px solid rgba(100,150,255,0.15)',
         fontSize: 13,
       }}>
-        <strong>💡 Tip:</strong> Check your usual parking spot for fresh fluid spots and log them here. 
+        <strong><TipIcon size={14} /> Tip:</strong> Check your usual parking spot for fresh fluid spots and log them here. 
         If you add brake fluid, log the date and amount so you can tell if it's dropping again.
       </div>
 
