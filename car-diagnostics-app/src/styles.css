@@ -1,3 +1,7 @@
+
+* {
+  outline: 5px solid hotpink !important;
+}
 /* Minimal global styles (no Tailwind). */
 
 :root {
