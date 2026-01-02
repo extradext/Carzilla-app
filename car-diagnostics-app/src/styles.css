@@ -126,5 +126,6 @@ a {
     drop-shadow(0 0 6px rgba(138, 31, 17, 0.4));
 }
 
-
-body { outline: 5px solid hotpink !important; }
+#root {
+  outline: 5px solid hotpink !important;
+}
