@@ -1307,8 +1307,8 @@ function EasyChecksSection() {
         }}
         data-testid="easy-checks-toggle"
       >
-        <span style={{ fontSize: 14, opacity: 0.6 }}>{isOpen ? "▼" : "▶"}</span>
-        <span style={{ fontSize: 15, opacity: 0.7 }}>🔍</span>
+        {isOpen ? <ChevronDownIcon size={14} style={{ opacity: 0.6 }} /> : <ChevronRightIcon size={14} style={{ opacity: 0.6 }} />}
+        <SearchIcon size={15} style={{ opacity: 0.7 }} />
         <span style={{ fontSize: 14, opacity: 0.7 }}>
           Easy checks before replacing parts
         </span>
@@ -1348,7 +1348,7 @@ function EasyChecksSection() {
                   gap: 6,
                 }}
               >
-                <span style={{ fontSize: 12, opacity: 0.5 }}>▸</span>
+                <ChevronRightIcon size={12} style={{ opacity: 0.5 }} />
                 {category.title}
               </summary>
               <div style={{ marginTop: 10, paddingLeft: 4 }}>
@@ -1371,7 +1371,7 @@ function EasyChecksSection() {
                     fontStyle: "italic",
                     lineHeight: 1.4,
                   }}>
-                    💡 {category.note}
+                    <TipIcon size={12} /> {category.note}
                   </p>
                 )}
               </div>
