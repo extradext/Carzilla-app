@@ -10,6 +10,7 @@ import React, { useState, useEffect } from 'react';
 import type { GarageNote } from '../models/garageNote';
 import type { MaintenanceEvent } from '../models/maintenance';
 import type { SavedDiagnostic } from '../models/savedDiagnostic';
+import { TipIcon } from './icons';
 import {
   getGarageNotes,
   addGarageNote,
