@@ -2695,11 +2695,14 @@ export function DiagnosticFlow({ vehicleId, onResult, excludedHypotheses = [], o
               color: "rgba(255, 255, 255, 0.7)",
               cursor: "default",
               userSelect: "text",
+              display: "flex",
+              alignItems: "flex-start",
+              gap: 8,
             }}
             data-testid="question-info"
           >
-            <span style={{ marginRight: 6, opacity: 0.8 }}>ℹ️</span>
-            <span style={{ fontStyle: "italic" }}>{currentQuestion.infoText}</span>
+            <InfoTextIcon text={currentQuestion.infoText} />
+            <span style={{ fontStyle: "italic" }}>{stripInfoEmoji(currentQuestion.infoText)}</span>
           </div>
         )}
       </section>
@@ -2707,4 +2710,23 @@ export function DiagnosticFlow({ vehicleId, onResult, excludedHypotheses = [], o
   }
 
   return null;
+}
+
+// Helper to determine icon type from infoText prefix
+function InfoTextIcon({ text }: { text: string }) {
+  if (text.startsWith("💡") || text.startsWith("🔍")) {
+    return <TipIcon size={14} style={{ opacity: 0.8, flexShrink: 0, marginTop: 2 }} />;
+  }
+  if (text.startsWith("⚠️")) {
+    return <WarningIcon size={14} style={{ opacity: 0.8, flexShrink: 0, marginTop: 2 }} />;
+  }
+  if (text.startsWith("🚗")) {
+    return <CarIcon size={14} style={{ opacity: 0.8, flexShrink: 0, marginTop: 2 }} />;
+  }
+  return <TipIcon size={14} style={{ opacity: 0.8, flexShrink: 0, marginTop: 2 }} />;
+}
+
+// Strip emoji prefix from infoText for display
+function stripInfoEmoji(text: string): string {
+  return text.replace(/^(💡|🔍|⚠️|🚗)\s*/, "");
 }
