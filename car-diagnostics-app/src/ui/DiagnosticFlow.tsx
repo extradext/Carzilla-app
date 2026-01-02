@@ -2356,39 +2356,52 @@ const ENTRY_START_QUESTIONS: Record<EntryAnchor, string> = {
   [ENTRY_ANCHORS.HVAC_SMELLS]: "hvac_or_smell",
 };
 
-// Entry anchor display info
-const ENTRY_ANCHOR_INFO: Record<EntryAnchor, { title: string; description: string; icon: string }> = {
+// Entry anchor display info - using lucide-react icons
+const ENTRY_ANCHOR_INFO: Record<EntryAnchor, { title: string; description: string; iconType: string }> = {
   [ENTRY_ANCHORS.WONT_START]: {
     title: "Won't Start",
     description: "Car doesn't start when I turn the key",
-    icon: "🔑",
+    iconType: "key",
   },
   [ENTRY_ANCHORS.STARTS_THEN_DIES]: {
     title: "Starts Then Dies",
     description: "Engine starts but stalls or won't stay running",
-    icon: "💨",
+    iconType: "activity",
   },
   [ENTRY_ANCHORS.NOISE]: {
     title: "Strange Noise",
     description: "I'm hearing an unusual sound",
-    icon: "🔊",
+    iconType: "volume",
   },
   [ENTRY_ANCHORS.ELECTRICAL]: {
     title: "Electrical Problem",
     description: "Lights, battery, or electrical issues",
-    icon: "⚡",
+    iconType: "alert",
   },
   [ENTRY_ANCHORS.BRAKING_HANDLING]: {
     title: "Braking or Handling",
     description: "Issues with brakes, steering, or how the car drives",
-    icon: "🛞",
+    iconType: "disc",
   },
   [ENTRY_ANCHORS.HVAC_SMELLS]: {
     title: "Climate or Smells",
     description: "Heat, AC, ventilation, or unusual odors",
-    icon: "🌡️",
+    iconType: "thermometer",
   },
 };
+
+// Icon renderer for entry anchors
+function EntryAnchorIcon({ iconType, size = 24 }: { iconType: string; size?: number }) {
+  switch (iconType) {
+    case "key": return <Key size={size} />;
+    case "activity": return <Activity size={size} />;
+    case "volume": return <Volume2 size={size} />;
+    case "alert": return <AlertCircle size={size} />;
+    case "disc": return <Disc size={size} />;
+    case "thermometer": return <Thermometer size={size} />;
+    default: return <CarIcon size={size} />;
+  }
+}
 
 export function DiagnosticFlow({ vehicleId, onResult, excludedHypotheses = [], onClearExclusions }: DiagnosticFlowProps) {
   const [step, setStep] = useState<FlowStep>("entry");
