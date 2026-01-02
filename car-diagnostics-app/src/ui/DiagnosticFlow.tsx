@@ -2648,9 +2648,11 @@ export function DiagnosticFlow({ vehicleId, onResult, excludedHypotheses = [], o
                 cursor: "help",
                 fontSize: 14,
                 opacity: 0.7,
+                display: "inline-flex",
+                alignItems: "center",
               }}
             >
-              ⚠️
+              <WarningIcon size={14} />
             </span>
           )}
         </div>
