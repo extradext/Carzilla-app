@@ -59,3 +59,69 @@ a {
   background: rgba(255, 255, 255, 0.08);
   font-size: 12px;
 }
+
+
+/* ================================
+   Maze-Cog Icon Theme (Global)
+   ================================ */
+
+/* Base icon style */
+.app-icon {
+  width: 42px;
+  height: 42px;
+  fill: currentColor;
+  color: #1a1a1a;
+
+  transition:
+    transform 160ms ease,
+    filter 160ms ease,
+    opacity 120ms ease;
+}
+
+/* Unselected / idle */
+.app-icon.idle {
+  opacity: 0.45;
+  transform: scale(0.96);
+}
+
+/* Hover (desktop only, harmless on mobile) */
+.app-icon:hover {
+  opacity: 0.85;
+  transform: scale(1.04);
+}
+
+/* Selected / active */
+.app-icon.active {
+  opacity: 1;
+  transform: scale(1.12) translateY(-1px);
+  filter:
+    drop-shadow(0 2px 6px rgba(0, 0, 0, 0.25))
+    drop-shadow(0 0 8px rgba(0, 0, 0, 0.15));
+}
+
+/* Pressed (tap feedback) */
+.app-icon:active {
+  transform: scale(1.06);
+  filter:
+    drop-shadow(0 1px 4px rgba(0, 0, 0, 0.35));
+}
+
+/* Disabled / locked */
+.app-icon.disabled {
+  opacity: 0.25;
+  filter: none;
+  transform: none;
+  pointer-events: none;
+}
+
+/* Optional accent color for results */
+.app-icon.result {
+  color: #0f4c81; /* muted steel blue */
+}
+
+/* Urgent / high-confidence result */
+.app-icon.urgent {
+  color: #8a1f11; /* deep red */
+  filter:
+    drop-shadow(0 0 6px rgba(138, 31, 17, 0.4));
+}
