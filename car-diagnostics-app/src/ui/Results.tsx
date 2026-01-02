@@ -1798,8 +1798,8 @@ export function Results({
             border: "1px solid rgba(100,150,255,0.2)",
           }}
         >
-          <summary style={{ cursor: "pointer", fontWeight: 500, fontSize: 14 }}>
-            💡 Understanding Brake Fluid Diagnosis
+          <summary style={{ cursor: "pointer", fontWeight: 500, fontSize: 14, display: "flex", alignItems: "center", gap: 6 }}>
+            <TipIcon size={14} /> Understanding Brake Fluid Diagnosis
           </summary>
           <div style={{ marginTop: 12, opacity: 0.85, lineHeight: 1.6, fontSize: 14 }}>
             <p style={{ margin: "0 0 12px" }}>
@@ -1826,8 +1826,8 @@ export function Results({
           }}
           data-testid="results-notes"
         >
-          <h3 style={{ margin: "0 0 8px", color: "#ff6b6b" }} data-testid="results-safety-notes-title">
-            ⚠️ Safety Notes
+          <h3 style={{ margin: "0 0 8px", color: "#ff6b6b", display: "flex", alignItems: "center", gap: 6 }} data-testid="results-safety-notes-title">
+            <WarningIcon size={16} /> Safety Notes
           </h3>
           <ul style={{ margin: 0, paddingLeft: 20 }} data-testid="results-safety-notes-list">
             {result.safetyNotes.map((n, i) => (
