@@ -6,13 +6,30 @@
 import React, { useState } from 'react';
 import { TIPS, type TipCategory, type Tip } from '../content/tips';
 import { FAQ } from '../content/faq';
+import {
+  BrakesIcon,
+  BatteryIcon,
+  WrenchIcon,
+  DocumentIcon,
+  CarIcon,
+  ChevronRightIcon,
+  ChevronDownIcon,
+} from './icons';
+
+const CATEGORY_ICONS: Record<TipCategory, React.ComponentType<{ size?: number; style?: React.CSSProperties }>> = {
+  brakes: BrakesIcon,
+  electrical: BatteryIcon,
+  engine: WrenchIcon,
+  general: DocumentIcon,
+  tires: CarIcon,
+};
 
 const CATEGORY_LABELS: Record<TipCategory, string> = {
-  brakes: "🛑 Brakes",
-  electrical: "🔋 Electrical",
-  engine: "🔧 Engine",
-  general: "📋 General",
-  tires: "🚗 Tires & Wheels",
+  brakes: "Brakes",
+  electrical: "Electrical",
+  engine: "Engine",
+  general: "General",
+  tires: "Tires & Wheels",
 };
 
 const CATEGORY_ORDER: TipCategory[] = ["brakes", "electrical", "engine", "tires", "general"];
@@ -50,10 +67,11 @@ export function TipsAndTricks() {
           {CATEGORY_ORDER.map((category) => {
             const categoryTips = groupedTips[category];
             if (categoryTips.length === 0) return null;
+            const IconComponent = CATEGORY_ICONS[category];
             return (
               <div key={category} style={{ marginBottom: 16 }}>
-                <h3 style={{ marginBottom: 8, borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: 4 }}>
-                  {CATEGORY_LABELS[category]}
+                <h3 style={{ marginBottom: 8, borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <IconComponent size={18} /> {CATEGORY_LABELS[category]}
                 </h3>
                 {categoryTips.map((tip) => (
                   <details
@@ -71,9 +89,9 @@ export function TipsAndTricks() {
                         e.preventDefault();
                         setExpandedTip(expandedTip === tip.id ? null : tip.id);
                       }}
-                      style={{ cursor: 'pointer', fontWeight: 500, listStyle: 'none' }}
+                      style={{ cursor: 'pointer', fontWeight: 500, listStyle: 'none', display: 'flex', alignItems: 'center', gap: 6 }}
                     >
-                      {expandedTip === tip.id ? '▼' : '▶'} {tip.title}
+                      {expandedTip === tip.id ? <ChevronDownIcon size={12} /> : <ChevronRightIcon size={12} />} {tip.title}
                     </summary>
                     <div style={{ marginTop: 8, opacity: 0.9, whiteSpace: 'pre-line', lineHeight: 1.5 }}>
                       {tip.body}
