@@ -1199,8 +1199,8 @@ function VerificationGuideSection({ componentId }: { componentId?: string }) {
         }}
         data-testid="verification-guide-toggle"
       >
-        <span style={{ fontSize: 16 }}>{isOpen ? "▼" : "▶"}</span>
-        <span style={{ fontSize: 16 }}>🔧</span>
+        {isOpen ? <ChevronDownIcon size={14} /> : <ChevronRightIcon size={14} />}
+        <WrenchIcon size={16} />
         <h4 style={{ margin: 0, fontSize: 15, fontWeight: 600 }}>
           How to check / verify this
         </h4>
@@ -1216,7 +1216,7 @@ function VerificationGuideSection({ componentId }: { componentId?: string }) {
           {/* Verification Checklist */}
           <div style={{ marginBottom: guide.notes ? 16 : 0 }}>
             <strong style={{ fontSize: 13, opacity: 0.7, display: "block", marginBottom: 8 }}>
-              ✓ Safe checks you can do:
+              <CheckIcon size={14} /> Safe checks you can do:
             </strong>
             <ul style={{ margin: 0, paddingLeft: 20, opacity: 0.9 }}>
               {guide.checks.map((check, i) => (
@@ -1237,7 +1237,7 @@ function VerificationGuideSection({ componentId }: { componentId?: string }) {
                 border: "1px solid rgba(255,200,100,0.25)",
               }}
             >
-              <strong style={{ fontSize: 13 }}>⚠️ Note:</strong>
+              <strong style={{ fontSize: 13 }}><WarningIcon size={14} /> Note:</strong>
               <p style={{ margin: "6px 0 0", fontSize: 13, opacity: 0.9, lineHeight: 1.4 }}>
                 {guide.notes}
               </p>
