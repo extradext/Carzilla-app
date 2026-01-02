@@ -39,6 +39,8 @@ import {
   ChevronRight,
   ChevronDown,
   Circle,
+  Activity,
+  Volume2,
 } from "lucide-react";
 
 // Default icon size for inline usage
