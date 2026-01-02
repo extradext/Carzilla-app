@@ -116,7 +116,9 @@ export function App() {
           data-testid="safety-disclaimer"
         >
           <div className="card" style={{ maxWidth: 500, textAlign: "center" }}>
-            <h2 style={{ marginTop: 0, color: "#ffd700" }}>⚠️ Safety Notice</h2>
+            <h2 style={{ marginTop: 0, color: "#ffd700", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+              <WarningIcon size={24} /> Safety Notice
+            </h2>
             <p style={{ fontSize: 18, margin: "20px 0" }}>
               Use diagnostics only while the vehicle is stationary.
             </p>
