@@ -1601,7 +1601,9 @@ export function Results({
               {/* Component-level badge */}
               {componentInfo && (
                 <div style={{
-                  display: "inline-block",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 6,
                   background: "rgba(100,200,150,0.3)",
                   padding: "4px 10px",
                   borderRadius: 4,
@@ -1611,12 +1613,12 @@ export function Results({
                   textTransform: "uppercase",
                   letterSpacing: "0.5px",
                 }}>
-                  🎯 Component Identified
+                  <TargetIcon size={12} /> Component Identified
                 </div>
               )}
               
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                <span style={{ fontSize: 20 }}>🔧</span>
+                <WrenchIcon size={20} />
                 <h3 style={{ margin: 0, opacity: 0.7, fontSize: 14, textTransform: "uppercase", letterSpacing: "0.5px" }}>
                   {componentInfo ? "Specific Component" : "Most Likely Cause"}
                 </h3>
@@ -1644,7 +1646,7 @@ export function Results({
                     : "rgba(100,200,100,0.2)",
                   fontSize: 13,
                 }}>
-                  <span>{componentInfo.urgency === "high" ? "⚠️" : componentInfo.urgency === "medium" ? "⏱️" : "ℹ️"}</span>
+                  <UrgencyIcon urgency={componentInfo.urgency} size={14} />
                   <strong>
                     {componentInfo.urgency === "high" ? "High Priority - Address Soon" 
                       : componentInfo.urgency === "medium" ? "Medium Priority"
@@ -1656,14 +1658,16 @@ export function Results({
               {/* Estimated cost for component-level */}
               {componentInfo && componentInfo.estimatedCost && (
                 <div style={{
-                  display: "block",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
                   padding: "8px 12px",
                   background: "rgba(255,255,255,0.05)",
                   borderRadius: 6,
                   marginBottom: 12,
                   fontSize: 14,
                 }}>
-                  <strong>💰 Estimated Cost:</strong> {componentInfo.estimatedCost}
+                  <CostIcon size={14} /> <strong>Estimated Cost:</strong> {componentInfo.estimatedCost}
                 </div>
               )}
               
@@ -1691,7 +1695,7 @@ export function Results({
                     marginTop: 12,
                   }}
                 >
-                  <strong style={{ fontSize: 13 }}>✓ What to check:</strong>
+                  <strong style={{ fontSize: 13 }}><CheckIcon size={14} /> What to check:</strong>
                   <ul style={{ margin: "8px 0 0", paddingLeft: 20, opacity: 0.9 }}>
                     {displayChecks.slice(0, 4).map((check, i) => (
                       <li key={i} style={{ marginBottom: 4 }}>{check}</li>
