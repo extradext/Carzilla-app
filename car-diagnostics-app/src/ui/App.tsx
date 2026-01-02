@@ -19,6 +19,7 @@ import { MyGarage } from "./MyGarage";
 import { TipsAndTricks } from "./TipsAndTricks";
 import { Settings } from "./Settings";
 import { isSafetyAcknowledged, setSafetyAcknowledged, getActiveVehicle } from "../storage/localStore";
+import { WarningIcon } from "./icons";
 
 type Tab = "diagnose" | "results" | "garage" | "tips" | "vehicles" | "settings";
 
