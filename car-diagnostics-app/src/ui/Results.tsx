@@ -1730,7 +1730,7 @@ export function Results({
                 data-testid="secondary-hypothesis-card"
               >
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                  <span style={{ fontSize: 16 }}>🔍</span>
+                  <SearchIcon size={16} />
                   <h4 style={{ margin: 0, opacity: 0.7, fontSize: 13, textTransform: "uppercase", letterSpacing: "0.5px" }}>
                     Also Consider
                   </h4>
