@@ -1934,27 +1934,27 @@ export function Results({
           <button
             className="button"
             onClick={handleSave}
-            style={{ padding: "12px 20px" }}
+            style={{ padding: "12px 20px", display: "flex", alignItems: "center", gap: 6 }}
             data-testid="save-result-btn"
           >
-            💾 Save to Garage
+            <SaveIcon size={16} /> Save to Garage
           </button>
         )}
         {saved && (
           <span
             className="badge"
-            style={{ background: "rgba(100,200,100,0.3)", padding: "12px 20px" }}
+            style={{ background: "rgba(100,200,100,0.3)", padding: "12px 20px", display: "flex", alignItems: "center", gap: 6 }}
           >
-            ✓ Saved to Garage
+            <CheckCircleIcon size={16} /> Saved to Garage
           </span>
         )}
         <button
           className="button"
           onClick={handleExport}
-          style={{ padding: "12px 20px" }}
+          style={{ padding: "12px 20px", display: "flex", alignItems: "center", gap: 6 }}
           data-testid="export-result-btn"
         >
-          📤 Export
+          <ExportIcon size={16} /> Export
         </button>
       </div>
 
@@ -1969,11 +1969,11 @@ export function Results({
         <button
           className="button"
           onClick={() => setShowFeedbackOptions(!showFeedbackOptions)}
-          style={{ width: "100%", textAlign: "left", padding: "14px 16px" }}
+          style={{ width: "100%", textAlign: "left", padding: "14px 16px", display: "flex", alignItems: "center", gap: 8 }}
           data-testid="feedback-toggle-btn"
         >
-          🤔 I think it's something else
-          <span style={{ float: "right" }}>{showFeedbackOptions ? "▲" : "▼"}</span>
+          <HelpIcon size={16} /> I think it's something else
+          <span style={{ marginLeft: "auto" }}>{showFeedbackOptions ? <ChevronDownIcon size={14} /> : <ChevronRightIcon size={14} />}</span>
         </button>
 
         {showFeedbackOptions && (
