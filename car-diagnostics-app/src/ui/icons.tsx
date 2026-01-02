@@ -239,4 +239,6 @@ export {
   AlertCircle,
   ChevronRight,
   ChevronDown,
+  Activity,
+  Volume2,
 };
