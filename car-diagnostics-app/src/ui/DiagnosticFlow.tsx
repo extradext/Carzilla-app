@@ -2609,8 +2609,8 @@ export function DiagnosticFlow({ vehicleId, onResult, excludedHypotheses = [], o
           }}
         >
           <div>
-            <div className="badge" style={{ marginBottom: 8 }}>
-              {ENTRY_ANCHOR_INFO[entryAnchor].icon} {ENTRY_ANCHOR_INFO[entryAnchor].title}
+            <div className="badge" style={{ marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
+              <EntryAnchorIcon iconType={ENTRY_ANCHOR_INFO[entryAnchor].iconType} size={16} /> {ENTRY_ANCHOR_INFO[entryAnchor].title}
             </div>
             <div style={{ fontSize: 12, opacity: 0.6 }}>
               {questionHistory.length} question{questionHistory.length !== 1 ? "s" : ""} answered
